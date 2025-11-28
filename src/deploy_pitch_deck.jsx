@@ -300,28 +300,10 @@ const TitleSlide = () => (
                         </h1>
                         
                 {/* Sub-headline */}
-                <p className="text-lg md:text-2xl lg:text-3xl font-mono text-black/70 mb-12 md:mb-16 max-w-xl leading-snug">
+                <p className="text-lg md:text-2xl lg:text-3xl font-mono text-black/70 max-w-xl leading-snug">
                     Yield infrastructure for idle capital.
-                </p>
-                
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <a 
-                        href="http://litepaper.deploy.finance/" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="px-8 py-4 min-h-[52px] text-sm font-mono font-bold uppercase tracking-wider bg-accent text-white border-2 border-accent hover:bg-black hover:border-black transition-all text-center flex items-center justify-center"
-                    >
-                        Read Litepaper
-                    </a>
-                    <a 
-                        href="mailto:hello@deploy.finance" 
-                        className="px-8 py-4 min-h-[52px] text-sm font-mono font-bold uppercase tracking-wider bg-transparent text-black border-2 border-black hover:bg-black hover:text-white transition-all text-center flex items-center justify-center"
-                    >
-                        Contact Us
-                    </a>
-                    </div>
-            </motion.div>
+                        </p>
+                    </motion.div>
         </div>
     </SlideContainer>
 );
@@ -974,15 +956,25 @@ const AskSlide = () => {
                         </div>
                     </div>
                     
-                    {/* CTA */}
-                    <a 
-                        href="mailto:hello@deploy.finance" 
-                        className="inline-flex items-center justify-center gap-2 md:gap-3 bg-accent text-white px-6 md:px-10 py-4 md:py-5 font-mono text-sm md:text-base font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors border-2 border-accent hover:border-white w-full sm:w-auto"
-                    >
-                        Join Us <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                    </a>
+                    {/* CTAs */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 md:mb-8">
+                        <a 
+                            href="http://litepaper.deploy.finance/" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center justify-center gap-2 md:gap-3 bg-accent text-white px-6 md:px-10 py-4 md:py-5 font-mono text-sm md:text-base font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors border-2 border-accent hover:border-white w-full sm:w-auto"
+                        >
+                            Read Litepaper <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                        </a>
+                        <a 
+                            href="mailto:hello@deploy.finance" 
+                            className="inline-flex items-center justify-center gap-2 md:gap-3 bg-transparent text-white px-6 md:px-10 py-4 md:py-5 font-mono text-sm md:text-base font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors border-2 border-white w-full sm:w-auto"
+                        >
+                            Contact Us
+                        </a>
+                    </div>
                     
-                    <div className="mt-4 md:mt-6 font-mono text-xs md:text-sm text-white/30">
+                    <div className="font-mono text-xs md:text-sm text-white/30">
                         hello@deploy.finance
                     </div>
                 </motion.div>

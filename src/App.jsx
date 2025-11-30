@@ -1,30 +1,16 @@
 import React from 'react';
-import Layout from './components/Layout';
-import Hero from './components/Hero';
-import Introduction from './components/Introduction';
-import EconomicThesis from './components/EconomicThesis';
-import TechnicalArchitecture from './components/TechnicalArchitecture';
-import ProductEcosystem from './components/ProductEcosystem';
-import RiskManagement from './components/RiskManagement';
-import EfficiencyPerformance from './components/EfficiencyPerformance';
-import Transparency from './components/Transparency';
-import Roadmap from './components/Roadmap';
-import Conclusion from './components/Conclusion';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Litepaper from './pages/Litepaper';
+import PitchDeck from './pages/PitchDeck';
 
 function App() {
   return (
-    <Layout>
-      <Hero />
-      <Introduction />
-      <EconomicThesis />
-      <TechnicalArchitecture />
-      <ProductEcosystem />
-      <RiskManagement />
-      <EfficiencyPerformance />
-      <Transparency />
-      <Roadmap />
-      <Conclusion />
-    </Layout>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Litepaper />} />
+        <Route path="/pitch" element={<PitchDeck />} />
+      </Routes>
+    </Router>
   );
 }
 

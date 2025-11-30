@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
@@ -16,6 +17,7 @@ const Layout = ({ children }) => {
                         © 2025 Deploy Finance. All Rights Reserved.
                     </div>
                     <div className="flex gap-6">
+                        <Link to="/pitch" className="hover:text-paper-text transition-colors font-medium">Pitch Deck</Link>
                         <a href="#" className="hover:text-paper-text transition-colors">Twitter</a>
                         <a href="#" className="hover:text-paper-text transition-colors">Discord</a>
                         <a href="#" className="hover:text-paper-text transition-colors">GitHub</a>

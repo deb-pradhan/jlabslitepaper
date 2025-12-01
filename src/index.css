@@ -125,6 +125,10 @@ h6 {
   background-color: #0047FF;
 }
 
+.bg-bone {
+  background-color: #F5F5F5;
+}
+
 .font-serif {
   font-family: 'Playfair Display', serif;
 }
@@ -138,6 +142,10 @@ h6 {
   font-family: 'JetBrains Mono', monospace;
   background-color: #F5F5F5;
   color: #000000;
-  overflow: hidden;
   min-height: 100vh;
+}
+
+/* FAQ page specific - allow scrolling */
+.pitch-deck-container.faq-page {
+  overflow: auto;
 }

@@ -138,16 +138,6 @@ const faqCategories = [
 
 const NoiseOverlay = () => <div className="noise-overlay" />;
 
-const GridBackground = () => (
-    <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 flex justify-between px-6 md:px-24">
-            {[...Array(6)].map((_, i) => (
-                <div key={i} className={`w-px h-full bg-black/10 ${i > 0 && i < 5 ? 'hidden md:block' : ''}`} />
-            ))}
-        </div>
-    </div>
-);
-
 // ============================================================================
 // FAQ ACCORDION COMPONENT
 // ============================================================================
@@ -220,7 +210,6 @@ const FAQ = () => {
     return (
         <div className="pitch-deck-container font-mono min-h-screen bg-bone text-black relative">
             <NoiseOverlay />
-            <GridBackground />
 
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 h-14 md:h-16 border-b border-black z-50 flex items-center justify-between px-4 md:px-6 backdrop-blur-md bg-bone/80">

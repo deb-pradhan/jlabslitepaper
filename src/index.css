@@ -14,7 +14,7 @@
 
   color-scheme: light;
   color: #1A1A1A;
-  background-color: #F9F9F9;
+  background-color: #F5F5F5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,19 +22,23 @@
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
 
-  /* Paper theme colors */
-  --color-paper-bg: #F9F9F9;
+  /* Paper theme colors - updated for pitch deck design system */
+  --color-paper-bg: #F5F5F5;
   --color-paper-card: #FFFFFF;
-  --color-paper-text: #1A1A1A;
-  --color-paper-muted: #666666;
-  --color-paper-border: #E5E5E5;
-  --color-paper-accent: #2D3436;
+  --color-paper-text: #000000;
+  --color-paper-muted: #000000/60;
+  --color-paper-border: #000000;
+  --color-paper-accent: #0047FF;
 }
 
-/* Ensure paper-accent background is visible */
-.bg-paper-accent {
-  background-color: #2D3436 !important;
-}
+/* Paper color utility classes */
+.bg-paper-bg { background-color: #F5F5F5; }
+.bg-paper-card { background-color: #FFFFFF; }
+.bg-paper-accent { background-color: #0047FF !important; }
+.text-paper-text { color: #000000; }
+.text-paper-muted { color: rgba(0, 0, 0, 0.5); }
+.text-paper-accent { color: #0047FF; }
+.border-paper-border { border-color: rgba(0, 0, 0, 0.15); }
 
 body {
   margin: 0;

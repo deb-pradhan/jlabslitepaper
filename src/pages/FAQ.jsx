@@ -194,22 +194,38 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
         const userMessage = input.trim();
         setInput('');
-        setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
+        
+        const newMessages = [...messages, { text: userMessage, isUser: true }];
+        setMessages(newMessages);
         setIsTyping(true);
 
-        // Simulate AI response (replace with actual API call)
-        setTimeout(() => {
-            const responses = [
-                "Deploy uses delta-neutral strategies to harvest yield from perpetual futures funding rates. This means your principal is protected regardless of market direction while earning consistent returns.",
-                "D-Assets are yield-enhanced versions of your crypto. When you deposit BTC, ETH, or stablecoins, you receive D-Assets that earn yield automatically while maintaining 1:1 backing.",
-                "Our yield comes from funding rates in perpetual futures markets. Traders pay these rates to maintain leveraged positions, and Deploy captures these payments through strategic positioning.",
-                "Getting started is simple: visit deploy.finance, connect your wallet, deposit your assets, and start earning immediately. No minimum deposits required.",
-                "Deploy is completely self-custodial. Your assets stay in your wallet under your control at all times. We never take custody of user funds."
-            ];
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            setMessages(prev => [...prev, { text: randomResponse, isUser: false }]);
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    history: messages // Send conversation history for context
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get response');
+            }
+
+            const data = await response.json();
+            setMessages(prev => [...prev, { text: data.reply, isUser: false }]);
+        } catch (error) {
+            console.error('Chat error:', error);
+            setMessages(prev => [...prev, { 
+                text: "Sorry, I'm having trouble connecting right now. Please try again or reach out to hello@deploy.finance for assistance.", 
+                isUser: false 
+            }]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     const handleKeyPress = (e) => {

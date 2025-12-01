@@ -443,7 +443,7 @@ const FAQ = () => {
                     </button>
 
                     <a 
-                        href="https://deploy.finance" 
+                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
@@ -510,7 +510,7 @@ const FAQ = () => {
                         Join thousands of users already earning real yield on their crypto holdings.
                     </p>
                     <a 
-                        href="https://deploy.finance" 
+                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-block px-8 py-4 bg-accent text-white font-mono text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors"

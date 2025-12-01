@@ -83,9 +83,14 @@ const Sidebar = () => {
                 </ul>
 
                 <div className="mt-12 pt-8 border-t border-paper-border">
-                    <button className="w-full py-2 px-4 bg-paper-accent text-white text-sm font-medium rounded-md hover:bg-black transition-colors">
+                    <a 
+                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full py-2 px-4 bg-paper-accent text-white text-sm font-medium rounded-md hover:bg-black transition-colors text-center"
+                    >
                         Launch App
-                    </button>
+                    </a>
                 </div>
             </nav>
 

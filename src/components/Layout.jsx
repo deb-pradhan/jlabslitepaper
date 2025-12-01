@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, MessageSquare } from 'lucide-react';
 
 const NoiseOverlay = () => <div className="noise-overlay" />;
 
@@ -19,7 +19,7 @@ const tocItems = [
     { id: 'invitation', label: '9. An Open Invitation' },
 ];
 
-const Layout = ({ children }) => {
+const Layout = ({ children, onOpenChat }) => {
     const location = useLocation();
     const currentPath = location.pathname;
     const [activeSection, setActiveSection] = useState('hero');
@@ -93,8 +93,17 @@ const Layout = ({ children }) => {
                         {isTocOpen ? <X size={18} /> : <Menu size={18} />}
                     </button>
 
+                    {/* Ask AI Button */}
+                    <button
+                        onClick={onOpenChat}
+                        className="flex items-center gap-2 px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+                    >
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="hidden sm:inline">Ask AI</span>
+                    </button>
+
                     <a 
-                        href="https://deploy.finance" 
+                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"

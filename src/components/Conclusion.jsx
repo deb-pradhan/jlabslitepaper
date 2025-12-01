@@ -39,8 +39,8 @@ const Conclusion = () => {
                         <span className="font-bold">Earn real yield on both.</span>
                     </div>
 
-                    <a href="https://deploy.finance" className="inline-block px-8 py-3 bg-paper-accent text-white font-medium rounded hover:bg-black transition-colors">
-                        deploy.finance
+                    <a href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-3 bg-paper-accent text-white font-medium rounded hover:bg-black transition-colors">
+                        Launch App
                     </a>
                 </div>
             </div>

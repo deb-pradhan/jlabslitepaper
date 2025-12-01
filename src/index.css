@@ -21,6 +21,19 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+
+  /* Paper theme colors */
+  --color-paper-bg: #F9F9F9;
+  --color-paper-card: #FFFFFF;
+  --color-paper-text: #1A1A1A;
+  --color-paper-muted: #666666;
+  --color-paper-border: #E5E5E5;
+  --color-paper-accent: #2D3436;
+}
+
+/* Ensure paper-accent background is visible */
+.bg-paper-accent {
+  background-color: #2D3436 !important;
 }
 
 body {

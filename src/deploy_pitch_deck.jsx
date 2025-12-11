@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, Linkedin, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -182,8 +182,10 @@ const ChartLoadingSkeleton = () => (
 );
 
 // ============================================================================
-// APY CHART COMPONENT
+// FUNDING DATA CONTEXT (preloads on app mount)
 // ============================================================================
+
+const FundingDataContext = createContext(null);
 
 const fetchFundingHistory = async (days = 730, coin = 'HYPE') => {
     const allData = [];
@@ -333,24 +335,51 @@ const calculateAPYStats = (rawData) => {
     };
 };
 
-const APYChart = ({ compact = false }) => {
-    const [activeRange, setActiveRange] = useState('3M');
+// Provider that fetches data once on mount
+const FundingDataProvider = ({ children }) => {
+    const [fundingHistory, setFundingHistory] = useState([]);
     const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
-    const [fundingHistory, setFundingHistory] = useState([]);
-    const [chartData, setChartData] = useState([]);
-    const [rangeAvgAPY, setRangeAvgAPY] = useState(null);
 
     useEffect(() => {
-        const loadHistory = async () => {
-            setIsLoading(true);
-            const data = await fetchFundingHistory(90);
+        // Fetch ~500 days to cover Sep 2024 onwards for realised APY
+        fetchFundingHistory(500).then(data => {
             setFundingHistory(data);
             setApyStats(calculateAPYStats(data));
             setIsLoading(false);
-        };
-        loadHistory();
+        });
     }, []);
+
+    const value = useMemo(() => ({ 
+        fundingHistory, 
+        apyStats, 
+        isLoading 
+    }), [fundingHistory, apyStats, isLoading]);
+
+    return (
+        <FundingDataContext.Provider value={value}>
+            {children}
+        </FundingDataContext.Provider>
+    );
+};
+
+const useFundingData = () => {
+    const context = useContext(FundingDataContext);
+    if (!context) {
+        throw new Error('useFundingData must be used within FundingDataProvider');
+    }
+    return context;
+};
+
+// ============================================================================
+// APY CHART COMPONENT
+// ============================================================================
+
+const APYChart = ({ compact = false }) => {
+    const { fundingHistory, isLoading } = useFundingData();
+    const [activeRange, setActiveRange] = useState('3M');
+    const [chartData, setChartData] = useState([]);
+    const [rangeAvgAPY, setRangeAvgAPY] = useState(null);
 
     useEffect(() => {
         if (fundingHistory.length > 0) {
@@ -660,19 +689,7 @@ const ProblemSlide = () => (
 // ============================================================================
 
 const SolutionSlide = () => {
-    const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const loadStats = async () => {
-            setIsLoading(true);
-            // Fetch ~500 days to cover Sep 2024 to today for realised APY
-            const data = await fetchFundingHistory(500);
-            setApyStats(calculateAPYStats(data));
-            setIsLoading(false);
-        };
-        loadStats();
-    }, []);
+    const { apyStats, isLoading } = useFundingData();
 
     return (
         <SlideContainer>
@@ -1493,7 +1510,7 @@ const SlideIndexModal = ({ isOpen, onClose, slides, currentSlide, onSelectSlide,
 // MAIN APPLICATION
 // ============================================================================
 
-export default function DeployPitchDeck() {
+function DeployPitchDeckInner() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isIndexOpen, setIsIndexOpen] = useState(false);
@@ -1614,5 +1631,14 @@ export default function DeployPitchDeck() {
                 dark={isDarkSlide}
             />
         </div>
+    );
+}
+
+// Wrap with provider so funding data loads immediately on page mount
+export default function DeployPitchDeck() {
+    return (
+        <FundingDataProvider>
+            <DeployPitchDeckInner />
+        </FundingDataProvider>
     );
 }

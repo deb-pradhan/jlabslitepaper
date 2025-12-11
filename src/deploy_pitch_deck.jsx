@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X } from 'lucide-react';
+import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
+import Navbar from './components/Navbar';
 
 // ============================================================================
 // CONSTANTS & CONFIG
@@ -987,24 +988,215 @@ const AskSlide = () => {
 // MAIN APPLICATION
 // ============================================================================
 
+// ============================================================================
+// BOTTOM SLIDE NAVIGATION
+// ============================================================================
+
+const BottomSlideNav = ({ currentSlide, totalSlides, slideName, onPrev, onNext, onOpenIndex, onGoToSlide, dark = false }) => {
+    const canGoPrev = currentSlide > 0;
+    const canGoNext = currentSlide < totalSlides - 1;
+
+    return (
+        <div className={`
+            fixed bottom-0 left-0 right-0 h-14 md:h-16
+            border-t z-50
+            flex items-center justify-between
+            px-4 md:px-6
+            backdrop-blur-md transition-colors duration-300
+            ${dark ? 'border-white/10 bg-black/90' : 'border-black bg-bone/90'}
+        `}>
+            {/* Left: Slide Counter + Name */}
+            <div className="flex items-center gap-3 md:gap-4">
+                <div className={`font-mono text-sm md:text-base tabular-nums ${dark ? 'text-white' : 'text-black'}`}>
+                    <span className="font-bold">{String(currentSlide + 1).padStart(2, '0')}</span>
+                    <span className={dark ? 'text-white/40' : 'text-black/40'}> / {String(totalSlides).padStart(2, '0')}</span>
+                </div>
+                <div className={`hidden sm:block w-px h-6 ${dark ? 'bg-white/20' : 'bg-black/20'}`} />
+                <div className={`hidden sm:block font-mono text-[10px] md:text-xs uppercase tracking-widest ${dark ? 'text-white/60' : 'text-black/60'}`}>
+                    {slideName}
+                </div>
+            </div>
+
+            {/* Center: Navigation Arrows + Dots */}
+            <div className="flex items-center gap-2 md:gap-4">
+                {/* Prev Arrow */}
+                <button
+                    onClick={onPrev}
+                    disabled={!canGoPrev}
+                    className={`
+                        p-2 md:p-2.5 border transition-colors
+                        ${dark 
+                            ? 'border-white/20 hover:bg-white hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white' 
+                            : 'border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black'
+                        }
+                    `}
+                >
+                    <ChevronLeft size={16} />
+                </button>
+
+                {/* Dot Indicators */}
+                <div className="hidden md:flex items-center gap-1.5">
+                    {Array.from({ length: totalSlides }).map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => onGoToSlide(i)}
+                            className={`
+                                transition-all duration-200
+                                ${i === currentSlide 
+                                    ? 'w-6 h-1.5 bg-accent' 
+                                    : `w-1.5 h-1.5 ${dark ? 'bg-white/30 hover:bg-white/50' : 'bg-black/30 hover:bg-black/50'}`
+                                }
+                            `}
+                        />
+                    ))}
+                </div>
+
+                {/* Next Arrow */}
+                <button
+                    onClick={onNext}
+                    disabled={!canGoNext}
+                    className={`
+                        p-2 md:p-2.5 border transition-colors
+                        ${dark 
+                            ? 'border-white/20 hover:bg-white hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white' 
+                            : 'border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black'
+                        }
+                    `}
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
+
+            {/* Right: Index Button */}
+            <button
+                onClick={onOpenIndex}
+                className={`
+                    flex items-center gap-2 px-3 md:px-4 py-2 border font-mono text-[10px] md:text-xs uppercase tracking-widest transition-colors
+                    ${dark 
+                        ? 'border-white/20 hover:bg-white hover:text-black' 
+                        : 'border-black hover:bg-black hover:text-white'
+                    }
+                `}
+            >
+                <span>Index</span>
+                <List size={14} />
+            </button>
+        </div>
+    );
+};
+
+// ============================================================================
+// SLIDE INDEX MODAL
+// ============================================================================
+
+const SlideIndexModal = ({ isOpen, onClose, slides, currentSlide, onSelectSlide, dark = false }) => {
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
+                    onClick={onClose}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-bone w-full max-w-lg max-h-[80vh] overflow-hidden border-2 border-black"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-black">
+                            <h2 className="font-serif text-xl">Slide Index</h2>
+                            <button
+                                onClick={onClose}
+                                className="p-2 border border-black hover:bg-black hover:text-white transition-colors"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {/* Slide List */}
+                        <div className="overflow-y-auto max-h-[60vh]">
+                            {slides.map((slide, i) => (
+                                <button
+                                    key={slide}
+                                    onClick={() => {
+                                        haptic.medium();
+                                        onSelectSlide(i);
+                                        onClose();
+                                    }}
+                                    className={`
+                                        w-full text-left px-4 py-4
+                                        border-b border-black/10
+                                        flex items-center justify-between gap-4
+                                        transition-colors
+                                        ${i === currentSlide 
+                                            ? 'bg-accent text-white' 
+                                            : 'hover:bg-black/5'
+                                        }
+                                    `}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <span className={`font-mono text-xs ${i === currentSlide ? 'text-white/60' : 'text-black/40'}`}>
+                                            {String(i + 1).padStart(2, '0')}
+                                        </span>
+                                        <span className="font-serif text-lg">{slide}</span>
+                                    </div>
+                                    {i === currentSlide && (
+                                        <span className="font-mono text-[10px] uppercase tracking-widest opacity-60">Current</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};
+
+// ============================================================================
+// MAIN APPLICATION
+// ============================================================================
+
 export default function DeployPitchDeck() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isIndexOpen, setIsIndexOpen] = useState(false);
 
     const handleScroll = useCallback((direction) => {
-        if (isScrolling || isMenuOpen) return;
+        if (isScrolling || isIndexOpen) return;
         setIsScrolling(true);
         setCurrentSlide(prev => {
             const next = direction === 'next' 
                 ? Math.min(prev + 1, SLIDES.length - 1)
                 : Math.max(prev - 1, 0);
-            // Haptic feedback on slide change
             if (next !== prev) haptic.medium();
             return next;
         });
         setTimeout(() => setIsScrolling(false), 700);
-    }, [isScrolling, isMenuOpen]);
+    }, [isScrolling, isIndexOpen]);
+
+    const goToPrev = () => {
+        if (currentSlide > 0) {
+            haptic.light();
+            setCurrentSlide(prev => prev - 1);
+        }
+    };
+
+    const goToNext = () => {
+        if (currentSlide < SLIDES.length - 1) {
+            haptic.light();
+            setCurrentSlide(prev => prev + 1);
+        }
+    };
 
     useEffect(() => {
         let touchStartY = 0;
@@ -1016,20 +1208,19 @@ export default function DeployPitchDeck() {
         const onKeyDown = (e) => {
             if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) { e.preventDefault(); handleScroll('next'); }
             if (['ArrowUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); handleScroll('prev'); }
-            if (e.key === 'Escape') setIsMenuOpen(false);
+            if (e.key === 'Escape') setIsIndexOpen(false);
         };
         const onTouchStart = (e) => {
             touchStartY = e.touches[0].clientY;
             touchStartX = e.touches[0].clientX;
         };
         const onTouchEnd = (e) => {
-            if (isMenuOpen) return;
+            if (isIndexOpen) return;
             const touchEndY = e.changedTouches[0].clientY;
             const touchEndX = e.changedTouches[0].clientX;
             const deltaY = touchStartY - touchEndY;
             const deltaX = touchStartX - touchEndX;
             
-            // Only trigger if vertical swipe is dominant and significant
             if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
                 handleScroll(deltaY > 0 ? 'next' : 'prev');
             }
@@ -1046,7 +1237,7 @@ export default function DeployPitchDeck() {
             window.removeEventListener('touchstart', onTouchStart);
             window.removeEventListener('touchend', onTouchEnd);
         };
-    }, [handleScroll, isMenuOpen]);
+    }, [handleScroll, isIndexOpen]);
 
     const slideComponents = [TitleSlide, ConflictSlide, PhilosophySlide, SolutionSlide, ProductSlide, TractionSlide, MoatSlide, RoadmapSlide, TeamSlide, AskSlide];
     const CurrentSlideComponent = slideComponents[currentSlide];
@@ -1057,117 +1248,8 @@ export default function DeployPitchDeck() {
             <NoiseOverlay />
             {!isDarkSlide && <GridBackground />}
             
-            {/* Navigation Bar */}
-            <header className={`
-                fixed top-0 left-0 right-0 h-14 md:h-16 
-                border-b z-50 
-                flex items-center justify-between 
-                px-4 md:px-6 
-                backdrop-blur-md transition-colors duration-300
-                ${isDarkSlide ? 'border-white/10 bg-black/80' : 'border-black/10 bg-bone/90'}
-            `}>
-                <img 
-                    src="/deploy_logo.png" 
-                    alt="Deploy." 
-                    className={`h-5 md:h-6 transition-all ${isDarkSlide ? 'invert' : ''}`} 
-                />
-                
-                {/* Desktop Nav */}
-                <nav className={`hidden md:flex border ${isDarkSlide ? 'border-white/20' : 'border-black'}`}>
-                    {SLIDES.map((slide, i) => (
-                        <button
-                            key={slide}
-                            onClick={() => { haptic.light(); setCurrentSlide(i); }}
-                            className={`
-                                px-3 lg:px-4 py-1.5 
-                                text-[10px] lg:text-xs font-mono uppercase tracking-wider 
-                                transition-colors duration-150
-                                ${i === currentSlide 
-                                    ? 'bg-accent text-white' 
-                                    : isDarkSlide 
-                                        ? 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white' 
-                                        : 'bg-black text-white hover:bg-accent'
-                                }
-                            `}
-                        >
-                            {slide}
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Mobile Menu Button */}
-                <button 
-                    onClick={() => { haptic.light(); setIsMenuOpen(true); }}
-                    className={`
-                        md:hidden px-4 py-2.5 
-                        border font-mono text-[11px] uppercase tracking-wider 
-                        min-h-[44px] flex items-center
-                        transition-colors
-                        ${isDarkSlide ? 'border-white/20 bg-white/5 text-white' : 'border-black bg-black text-white'}
-                    `}
-                >
-                    Menu
-                </button>
-                
-                {/* Slide Counter */}
-                <div className={`hidden md:block font-mono text-xs tabular-nums ${isDarkSlide ? 'text-white/50' : 'text-black/50'}`}>
-                    {String(currentSlide + 1).padStart(2, '0')}/{String(SLIDES.length).padStart(2, '0')}
-                </div>
-            </header>
-
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="fixed inset-0 bg-bone/80 backdrop-blur-xl z-[60] flex flex-col md:hidden"
-                    >
-                        {/* Menu Header */}
-                        <div className="h-14 border-b border-black/20 flex items-center justify-between px-4 flex-shrink-0 bg-bone/60 backdrop-blur-md">
-                            <img src="/deploy_logo.png" alt="Deploy." className="h-5" />
-                            <button 
-                                onClick={() => { haptic.light(); setIsMenuOpen(false); }}
-                                className="px-4 py-2.5 border border-black bg-black text-white font-mono text-[11px] uppercase tracking-wider min-h-[44px] flex items-center"
-                            >
-                                Close
-                            </button>
-                </div>
-
-                        {/* Menu Items */}
-                        <nav className="flex-1 overflow-y-auto">
-                            {SLIDES.map((slide, i) => (
-                                <button
-                                    key={slide}
-                                    onClick={() => { haptic.medium(); setCurrentSlide(i); setIsMenuOpen(false); }}
-                                    className={`
-                                        w-full text-left px-6 py-5 
-                                        border-b border-black/20 
-                                        font-serif text-xl 
-                                        transition-colors 
-                                        flex items-center justify-between 
-                                        min-h-[64px]
-                                        ${i === currentSlide ? 'bg-accent text-white' : 'bg-transparent text-black hover:bg-black/10'}
-                                    `}
-                                >
-                                    <span>{slide}</span>
-                                    <span className="font-mono text-xs opacity-50">{String(i + 1).padStart(2, '0')}</span>
-                                </button>
-                            ))}
-                        </nav>
-                        
-                        {/* Menu Footer */}
-                        <div className="p-6 border-t border-black bg-black text-white flex-shrink-0">
-                            <div className="font-mono text-[10px] uppercase tracking-widest mb-2 opacity-50">Contact</div>
-                            <a href="mailto:hello@deploy.finance" className="text-base font-serif hover:text-accent transition-colors">
-                                hello@deploy.finance
-                            </a>
-            </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Shared Navigation Bar */}
+            <Navbar dark={isDarkSlide} />
 
             {/* Main Content */}
             <AnimatePresence mode="wait">
@@ -1177,16 +1259,32 @@ export default function DeployPitchDeck() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    className="w-full min-h-screen pt-14 md:pt-16"
+                    className="w-full min-h-screen pt-14 md:pt-16 pb-14 md:pb-16"
                 >
                     <CurrentSlideComponent />
                 </motion.main>
             </AnimatePresence>
             
-            {/* Mobile Progress */}
-            <div 
-                className="fixed bottom-0 left-0 h-1 bg-accent z-40 md:hidden transition-all duration-500 ease-out" 
-                style={{ width: `${((currentSlide + 1) / SLIDES.length) * 100}%` }} 
+            {/* Bottom Slide Navigation */}
+            <BottomSlideNav
+                currentSlide={currentSlide}
+                totalSlides={SLIDES.length}
+                slideName={SLIDES[currentSlide]}
+                onPrev={goToPrev}
+                onNext={goToNext}
+                onGoToSlide={(i) => { haptic.light(); setCurrentSlide(i); }}
+                onOpenIndex={() => setIsIndexOpen(true)}
+                dark={isDarkSlide}
+            />
+
+            {/* Slide Index Modal */}
+            <SlideIndexModal
+                isOpen={isIndexOpen}
+                onClose={() => setIsIndexOpen(false)}
+                slides={SLIDES}
+                currentSlide={currentSlide}
+                onSelectSlide={setCurrentSlide}
+                dark={isDarkSlide}
             />
         </div>
     );

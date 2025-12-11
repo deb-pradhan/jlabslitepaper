@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { Menu, X, MessageSquare } from 'lucide-react';
+import Navbar from './Navbar';
 
 const NoiseOverlay = () => <div className="noise-overlay" />;
 
@@ -20,16 +20,8 @@ const tocItems = [
 ];
 
 const Layout = ({ children, onOpenChat }) => {
-    const location = useLocation();
-    const currentPath = location.pathname;
     const [activeSection, setActiveSection] = useState('hero');
     const [isTocOpen, setIsTocOpen] = useState(false);
-
-    const navItems = [
-        { path: '/', label: 'Litepaper' },
-        { path: '/pitch', label: 'Pitch Deck' },
-        { path: '/faq', label: 'FAQ' },
-    ];
 
     // Track active section on scroll
     useEffect(() => {
@@ -55,63 +47,12 @@ const Layout = ({ children, onOpenChat }) => {
         <div className="pitch-deck-container font-mono min-h-screen bg-bone text-black relative">
             <NoiseOverlay />
 
-            {/* Header */}
-            <header className="fixed top-0 left-0 right-0 h-14 md:h-16 border-b border-black z-50 flex items-center justify-between px-4 md:px-6 backdrop-blur-md bg-bone/80">
-                <Link to="/">
-                    <img 
-                        src="/deploy_logo.png" 
-                        alt="Deploy." 
-                        className="h-5 md:h-6" 
-                    />
-                </Link>
-                
-                <nav className="hidden md:flex border border-black">
-                    {navItems.map((item, index) => (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            className={`
-                                px-4 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors
-                                ${index < navItems.length - 1 ? 'border-r border-black' : ''}
-                                ${currentPath === item.path 
-                                    ? 'bg-accent text-white' 
-                                    : 'hover:bg-black hover:text-white'
-                                }
-                            `}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
-
-                <div className="flex items-center gap-2">
-                    {/* Mobile TOC Toggle */}
-                    <button
-                        onClick={() => setIsTocOpen(!isTocOpen)}
-                        className="lg:hidden p-2 border border-black hover:bg-black hover:text-white transition-colors"
-                    >
-                        {isTocOpen ? <X size={18} /> : <Menu size={18} />}
-                    </button>
-
-                    {/* Ask AI Button */}
-                    <button
-                        onClick={onOpenChat}
-                        className="flex items-center gap-2 px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
-                    >
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="hidden sm:inline">Ask AI</span>
-                    </button>
-
-                    <a 
-                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
-                    >
-                        Launch App
-                    </a>
-                </div>
-            </header>
+            {/* Shared Navbar */}
+            <Navbar 
+                onOpenChat={onOpenChat} 
+                onToggleSidebar={() => setIsTocOpen(!isTocOpen)}
+                showSidebarToggle={true}
+            />
 
             {/* Sidebar / Table of Contents */}
             <aside className={clsx(

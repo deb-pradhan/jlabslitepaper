@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowLeft, Send, MessageSquare, X, Bot, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 // ============================================================================
 // FAQ DATA
@@ -401,57 +402,8 @@ const FAQ = () => {
         <div className="pitch-deck-container font-mono min-h-screen bg-bone text-black relative">
             <NoiseOverlay />
 
-            {/* Header */}
-            <header className="fixed top-0 left-0 right-0 h-14 md:h-16 border-b border-black z-50 flex items-center justify-between px-4 md:px-6 backdrop-blur-md bg-bone/80">
-                <Link to="/">
-                    <img 
-                        src="/deploy_logo.png" 
-                        alt="Deploy." 
-                        className="h-5 md:h-6" 
-                    />
-                </Link>
-                
-                <nav className="hidden md:flex border border-black">
-                    <Link
-                        to="/"
-                        className="px-4 py-2 font-mono text-[10px] uppercase tracking-widest border-r border-black hover:bg-black hover:text-white transition-colors"
-                    >
-                        Litepaper
-                    </Link>
-                    <Link
-                        to="/pitch"
-                        className="px-4 py-2 font-mono text-[10px] uppercase tracking-widest border-r border-black hover:bg-black hover:text-white transition-colors"
-                    >
-                        Pitch Deck
-                    </Link>
-                    <Link
-                        to="/faq"
-                        className="px-4 py-2 font-mono text-[10px] uppercase tracking-widest bg-accent text-white"
-                    >
-                        FAQ
-                    </Link>
-                </nav>
-
-                <div className="flex items-center gap-2">
-                    {/* Chat Toggle Button */}
-                    <button
-                        onClick={() => setIsChatOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
-                    >
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="hidden sm:inline">Ask AI</span>
-                    </button>
-
-                    <a 
-                        href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
-                    >
-                        Launch App
-                    </a>
-                </div>
-            </header>
+            {/* Shared Navbar */}
+            <Navbar onOpenChat={() => setIsChatOpen(true)} />
 
             {/* Chat Sidebar */}
             <ChatSidebar isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />

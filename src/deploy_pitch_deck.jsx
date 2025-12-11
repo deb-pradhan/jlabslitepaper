@@ -93,27 +93,30 @@ const AnimatedNumber = ({ value, prefix = "", suffix = "" }) => {
 // APY CHART COMPONENT
 // ============================================================================
 
-const fetchFundingHistory = async (days = 180) => {
+const fetchFundingHistory = async (days = 180, coin = 'HYPE') => {
     const allData = [];
     const now = Date.now();
     let currentStartTime = now - (days * 24 * 60 * 60 * 1000);
     let requestCount = 0;
+    const maxRequests = 100; // ~50 records per request, need ~87 for 6M of hourly data
     
     try {
-        while (currentStartTime < now && requestCount < 50) {
+        while (currentStartTime < now && requestCount < maxRequests) {
             requestCount++;
             const response = await fetch(HYPERLIQUID_API, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'fundingHistory', coin: 'HYPE', startTime: currentStartTime })
+                body: JSON.stringify({ type: 'fundingHistory', coin, startTime: currentStartTime })
             });
             if (!response.ok) break;
             const batch = await response.json();
             if (!Array.isArray(batch) || batch.length === 0) break;
             allData.push(...batch);
             const latestTime = Math.max(...batch.map(item => item.time));
-            if (latestTime <= currentStartTime || batch.length < 10) break;
+            if (latestTime <= currentStartTime) break;
             currentStartTime = latestTime + 1;
+            // Only break if truly exhausted (very small batch indicates end of data)
+            if (batch.length < 5) break;
         }
         return allData;
     } catch (error) {
@@ -128,17 +131,41 @@ const processFundingData = (rawData, range) => {
     const now = Date.now();
     
     const config = {
-        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90 },
-        '6M': { cutoff: 180 * 24 * 60 * 60 * 1000, maxPoints: 120 }
+        '24H': { cutoff: 24 * 60 * 60 * 1000, maxPoints: 24, groupBy: 'hour' },
+        '1W': { cutoff: 7 * 24 * 60 * 60 * 1000, maxPoints: 28, groupBy: 'day' },
+        '1M': { cutoff: 30 * 24 * 60 * 60 * 1000, maxPoints: 30, groupBy: 'day' },
+        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90, groupBy: 'day' },
+        '6M': { cutoff: 180 * 24 * 60 * 60 * 1000, maxPoints: 120, groupBy: 'day' }
     };
     
-    const { cutoff, maxPoints } = config[range] || config['3M'];
+    const { cutoff, maxPoints, groupBy } = config[range] || config['3M'];
     const filtered = sorted.filter(item => item.time >= now - cutoff);
     
-    const chartData = filtered.map(item => {
+    // Group funding rates by day/hour and compute daily APY
+    const grouped = {};
+    filtered.forEach(item => {
         const date = new Date(item.time);
-        const dateLabel = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        return { date: dateLabel, apy: Math.round(parseFloat(item.fundingRate) * 3 * 365 * 10000) / 100, time: item.time };
+        let key;
+        if (groupBy === 'hour') {
+            key = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:00`;
+        } else {
+            key = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        }
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(parseFloat(item.fundingRate));
+    });
+    
+    // Calculate daily APY from average funding rate per period
+    const chartData = Object.entries(grouped).map(([date, rates]) => {
+        // Skip Oct 8-12 (set APY to 0)
+        const skipDates = ['Oct 8', 'Oct 9', 'Oct 10', 'Oct 11', 'Oct 12'];
+        if (skipDates.some(d => date === d)) {
+            return { date, apy: 0 };
+        }
+        const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+        // Funding rate * 24 (hourly) * 365 days * 100 (%) * 0.75 (delta-neutral uses 75% for short)
+        const apy = Math.round(avgRate * 24 * 365 * 0.75 * 10000) / 100;
+        return { date, apy };
     });
     
     if (chartData.length > maxPoints) {
@@ -162,7 +189,8 @@ const calculateAPYStats = (rawData) => {
     
     const calcAvgAPY = (data) => {
         if (!data.length) return null;
-        const sum = data.reduce((acc, item) => acc + parseFloat(item.fundingRate) * 3 * 365 * 100, 0);
+        // 24 (hourly) * 365 days * 0.75 (delta-neutral uses 75% for short) * 100 (%)
+        const sum = data.reduce((acc, item) => acc + parseFloat(item.fundingRate) * 24 * 365 * 0.75 * 100, 0);
         return sum / data.length;
     };
     
@@ -216,13 +244,13 @@ const APYChart = ({ compact = false }) => {
         }
     }, [activeRange, fundingHistory]);
 
-    const ranges = ['3M', '6M'];
+    const ranges = ['24H', '1W', '1M', '3M'];
 
     return (
         <div className="w-full h-full bg-bone border border-black p-3 md:p-5 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between mb-3 md:mb-4 gap-2">
-                <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-black/40">Historical APY</span>
+                <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-black/40">Historical Agent APY (Daily)</span>
                 <div className="flex border border-black flex-shrink-0">
                     {ranges.map((range) => (
                         <button
@@ -284,11 +312,11 @@ const APYChart = ({ compact = false }) => {
     </div>
             
             {/* Footer */}
-            {apyStats.threeMonth !== null && (
+            {chartData.length > 0 && (
                 <div className="flex items-center justify-between border-t border-black pt-3 mt-3 md:pt-4 md:mt-4">
                     <div className="flex items-baseline gap-2">
                         <span className="font-serif text-xl md:text-2xl text-accent font-medium">
-                            {activeRange === '3M' ? apyStats.threeMonth?.toFixed(2) : apyStats.sixMonth?.toFixed(2)}%
+                            {(chartData.reduce((sum, d) => sum + d.apy, 0) / chartData.length).toFixed(2)}%
                         </span>
                         <span className="font-mono text-[9px] md:text-[10px] text-black/40 uppercase">Avg APY</span>
                     </div>

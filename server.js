@@ -195,6 +195,14 @@ DeFi strategist. Designed yield strategies managing $100M+. Previously at Jarvis
 ### Amit Trehan - CTO
 Security-first engineer. Built trading systems at scale. Ex-VP Lloyd's Bank.
 
+### Advisors & Angels
+- **FalconX** — Advisory + Angel (committed, pending lead)
+- **Jimmy** — Coincall
+- **0xwives** — aixbt
+- **Sankalp** — Rising Capital
+- **Albin Wang** — BitGo
+- **Shawn** — JPMorgan
+
 The only team capable of bridging DeFi and TradFi worlds.
 
 ---

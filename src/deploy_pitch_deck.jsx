@@ -190,7 +190,7 @@ const fetchFundingHistory = async (days = 730, coin = 'HYPE') => {
     const now = Date.now();
     let currentStartTime = now - (days * 24 * 60 * 60 * 1000);
     let requestCount = 0;
-    const maxRequests = 100; // ~50 records per request, need ~87 for 6M of hourly data
+    const maxRequests = 100; // ~50 records per request
     
     try {
         while (currentStartTime < now && requestCount < maxRequests) {
@@ -218,7 +218,7 @@ const fetchFundingHistory = async (days = 730, coin = 'HYPE') => {
 };
 
 const processFundingData = (rawData, range) => {
-    if (!rawData?.length) return [];
+    if (!rawData?.length) return { chartData: [], avgAPY: null };
     const sorted = [...rawData].sort((a, b) => a.time - b.time);
     const now = Date.now();
     
@@ -226,12 +226,17 @@ const processFundingData = (rawData, range) => {
         '24H': { cutoff: 24 * 60 * 60 * 1000, maxPoints: 24, groupBy: 'hour' },
         '1W': { cutoff: 7 * 24 * 60 * 60 * 1000, maxPoints: 28, groupBy: 'day' },
         '1M': { cutoff: 30 * 24 * 60 * 60 * 1000, maxPoints: 30, groupBy: 'day' },
-        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90, groupBy: 'day' },
-        '6M': { cutoff: 180 * 24 * 60 * 60 * 1000, maxPoints: 120, groupBy: 'day' }
+        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90, groupBy: 'day' }
     };
     
     const { cutoff, maxPoints, groupBy } = config[range] || config['3M'];
     const filtered = sorted.filter(item => item.time >= now - cutoff);
+    
+    // Calculate accurate average APY from ALL filtered funding rates (before any grouping/downsampling)
+    // Formula: fundingRate * 24 (hourly) * 365 (days) * 0.75 (delta-neutral factor) * 100 (%)
+    const avgAPY = filtered.length > 0
+        ? filtered.reduce((sum, item) => sum + parseFloat(item.fundingRate) * 24 * 365 * 0.75 * 100, 0) / filtered.length
+        : null;
     
     // Group funding rates by day/hour and compute daily APY
     const grouped = {};
@@ -247,8 +252,8 @@ const processFundingData = (rawData, range) => {
         grouped[key].push(parseFloat(item.fundingRate));
     });
     
-    // Calculate daily APY from average funding rate per period
-    const chartData = Object.entries(grouped).map(([date, rates]) => {
+    // Calculate daily APY from average funding rate per period (for chart visualization)
+    let chartData = Object.entries(grouped).map(([date, rates]) => {
         // Skip Oct 8-12 (set APY to 0)
         const skipDates = ['Oct 8', 'Oct 9', 'Oct 10', 'Oct 11', 'Oct 12'];
         if (skipDates.some(d => date === d)) {
@@ -260,11 +265,12 @@ const processFundingData = (rawData, range) => {
         return { date, apy };
     });
     
+    // Downsample for chart display only (avgAPY is already calculated from full data)
     if (chartData.length > maxPoints) {
         const step = Math.ceil(chartData.length / maxPoints);
-        return chartData.filter((_, i) => i % step === 0 || i === chartData.length - 1);
+        chartData = chartData.filter((_, i) => i % step === 0 || i === chartData.length - 1);
     }
-    return chartData;
+    return { chartData, avgAPY };
 };
 
 const calculateAPYStats = (rawData) => {
@@ -275,13 +281,13 @@ const calculateAPYStats = (rawData) => {
     
     const thirtyDayCutoff = now - (30 * 24 * 60 * 60 * 1000);
     const threeMonthCutoff = now - (90 * 24 * 60 * 60 * 1000);
-    // Jan 1, 2024 timestamp for all-time realized calculation
-    const jan2024Cutoff = new Date('2024-01-01T00:00:00Z').getTime();
+    // Sep 1, 2024 timestamp for realised APY calculation
+    const sep2024Cutoff = new Date('2024-09-01T00:00:00Z').getTime();
     
     const thirtyDayData = sorted.filter(item => item.time >= thirtyDayCutoff);
     const threeMonthData = sorted.filter(item => item.time >= threeMonthCutoff);
-    // All-time realized from Jan 2024 onwards
-    const realisedData = sorted.filter(item => item.time >= jan2024Cutoff);
+    // Realised from Sep 2024 onwards
+    const realisedData = sorted.filter(item => item.time >= sep2024Cutoff);
     
     const calcAvgAPY = (data) => {
         if (!data.length) return null;
@@ -296,44 +302,49 @@ const calculateAPYStats = (rawData) => {
     const lastDayData = sorted.filter(item => item.time >= oneDayAgo);
     const liveAPY = calcAvgAPY(lastDayData);
     
-    // Calculate 7-day rolling average max APY (more meaningful than single period max)
-    const sevenDayMs = 7 * 24 * 60 * 60 * 1000;
-    let maxRollingAPY = null;
-    
-    if (sorted.length > 0) {
-        for (let i = 0; i < sorted.length; i++) {
-            const windowEnd = sorted[i].time;
-            const windowStart = windowEnd - sevenDayMs;
-            const windowData = sorted.filter(item => item.time >= windowStart && item.time <= windowEnd);
-            if (windowData.length > 0) {
-                const windowAvg = calcAvgAPY(windowData);
-                if (maxRollingAPY === null || windowAvg > maxRollingAPY) {
-                    maxRollingAPY = windowAvg;
-                }
+    // Calculate peak daily APY from past 90 days (absolute max, not rolling avg)
+    let peakDailyAPY = null;
+    if (threeMonthData.length > 0) {
+        // Group by day
+        const dailyRates = {};
+        threeMonthData.forEach(item => {
+            const date = new Date(item.time);
+            const dayKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+            if (!dailyRates[dayKey]) dailyRates[dayKey] = [];
+            dailyRates[dayKey].push(parseFloat(item.fundingRate));
+        });
+        
+        // Calculate daily APY for each day and find max
+        Object.values(dailyRates).forEach(rates => {
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const dailyAPY = avgRate * 24 * 365 * 0.75 * 100;
+            if (peakDailyAPY === null || dailyAPY > peakDailyAPY) {
+                peakDailyAPY = dailyAPY;
             }
-        }
+        });
     }
     
     return {
         live: liveAPY, // Current 24h APY
         thirtyDay: calcAvgAPY(thirtyDayData), // 30-day realized average
         threeMonth: calcAvgAPY(threeMonthData),
-        max: maxRollingAPY, // Peak 7-day rolling max
-        realised: calcAvgAPY(realisedData) // All-time average from March 2025
+        max: peakDailyAPY, // Peak daily APY from past 90 days
+        realised: calcAvgAPY(realisedData) // All-time average from Jan 2024
     };
 };
 
 const APYChart = ({ compact = false }) => {
-    const [activeRange, setActiveRange] = useState('1M');
+    const [activeRange, setActiveRange] = useState('3M');
     const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
     const [fundingHistory, setFundingHistory] = useState([]);
     const [chartData, setChartData] = useState([]);
+    const [rangeAvgAPY, setRangeAvgAPY] = useState(null);
 
     useEffect(() => {
         const loadHistory = async () => {
             setIsLoading(true);
-            const data = await fetchFundingHistory(730);
+            const data = await fetchFundingHistory(90);
             setFundingHistory(data);
             setApyStats(calculateAPYStats(data));
             setIsLoading(false);
@@ -343,11 +354,13 @@ const APYChart = ({ compact = false }) => {
 
     useEffect(() => {
         if (fundingHistory.length > 0) {
-            setChartData(processFundingData(fundingHistory, activeRange));
+            const { chartData: newChartData, avgAPY } = processFundingData(fundingHistory, activeRange);
+            setChartData(newChartData);
+            setRangeAvgAPY(avgAPY);
         }
     }, [activeRange, fundingHistory]);
 
-    const ranges = ['1M', '3M', '6M'];
+    const ranges = ['1W', '1M', '3M'];
 
     return (
         <div className="w-full h-full bg-bone border border-black p-3 md:p-5 flex flex-col">
@@ -417,7 +430,7 @@ const APYChart = ({ compact = false }) => {
                 <div className="flex items-baseline gap-2">
                     <span className="font-serif text-xl md:text-2xl text-accent font-medium">
                         <ScrambledNumber 
-                            value={chartData.length > 0 ? chartData.reduce((sum, d) => sum + d.apy, 0) / chartData.length : null}
+                            value={rangeAvgAPY}
                             isLoading={isLoading}
                             suffix="%"
                         />
@@ -653,7 +666,8 @@ const SolutionSlide = () => {
     useEffect(() => {
         const loadStats = async () => {
             setIsLoading(true);
-            const data = await fetchFundingHistory(730);
+            // Fetch ~500 days to cover Sep 2024 to today for realised APY
+            const data = await fetchFundingHistory(500);
             setApyStats(calculateAPYStats(data));
             setIsLoading(false);
         };
@@ -706,7 +720,7 @@ const SolutionSlide = () => {
                                     decimals={1}
                                 />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">30D Realized</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">30D Avg APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
@@ -717,7 +731,7 @@ const SolutionSlide = () => {
                                     decimals={1}
                                 />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Peak APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">90D Peak APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
@@ -1225,8 +1239,6 @@ const TeamSlide = () => {
 // ============================================================================
 
 const AskSlide = () => {
-    const milestones = ["dUSD Mainnet", "$100M TVL", "Enterprise"];
-
     return (
         <SlideContainer dark>
             <div className="w-full max-w-4xl text-center">
@@ -1236,35 +1248,44 @@ const AskSlide = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <SectionTag dark>09 — The Invitation</SectionTag>
+                    <SectionTag dark>09 — Connect</SectionTag>
                     
                     <h2 className="text-2xl md:text-5xl lg:text-6xl font-serif leading-[1] md:leading-[0.95] mb-8 md:mb-12">
-                        We aren't raising capital.<br/>
-                        <span className="text-accent italic">We're recruiting conviction.</span>
-             </h2>
-             
-                    {/* The Deal */}
-                    <div className="grid grid-cols-2 gap-4 md:flex md:justify-center md:gap-16 mb-8 md:mb-12 border-y border-white/20 py-6 md:py-10">
-                        <div>
-                            <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-widest mb-1 md:mb-2 text-white/40">Raising</div>
-                            <div className="text-4xl md:text-6xl font-serif text-accent">$5M</div>
-                 </div>
-                        <div>
-                            <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-widest mb-1 md:mb-2 text-white/40">Valuation</div>
-                            <div className="text-4xl md:text-6xl font-serif text-white">$50M</div>
-                 </div>
-             </div>
-             
-                    {/* Milestones */}
-                    <div className="mb-8 md:mb-12">
-                        <div className="font-mono text-xs md:text-sm text-white/50 mb-3 md:mb-4">This unlocks:</div>
-                        <div className="grid grid-cols-3 gap-2 md:flex md:justify-center md:gap-4">
-                            {milestones.map((milestone) => (
-                                <div key={milestone} className="border border-white/20 px-3 md:px-5 py-2 md:py-3 font-mono text-[10px] md:text-sm text-white/70">
-                                    {milestone}
-                                </div>
-                            ))}
-                        </div>
+                        Let's build the future<br/>
+                        <span className="text-accent italic">of stablecoins together.</span>
+                    </h2>
+                    
+                    {/* Website */}
+                    <div className="mb-8 md:mb-10">
+                        <a 
+                            href="https://deploy.finance" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-3xl md:text-5xl font-serif text-accent hover:text-white transition-colors"
+                        >
+                            deploy.finance
+                        </a>
+                    </div>
+                    
+                    {/* Social Links */}
+                    <div className="flex justify-center gap-4 md:gap-6 mb-8 md:mb-10">
+                        <a 
+                            href="https://twitter.com/deploy_finance" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 border border-white/20 px-4 md:px-6 py-3 md:py-4 font-mono text-xs md:text-sm text-white/70 hover:bg-white hover:text-black transition-colors"
+                        >
+                            <Twitter className="w-4 h-4 md:w-5 md:h-5" />
+                            Twitter
+                        </a>
+                        <a 
+                            href="https://discord.gg/deploy" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 border border-white/20 px-4 md:px-6 py-3 md:py-4 font-mono text-xs md:text-sm text-white/70 hover:bg-white hover:text-black transition-colors"
+                        >
+                            Discord
+                        </a>
                     </div>
                     
                     {/* CTAs */}
@@ -1289,9 +1310,9 @@ const AskSlide = () => {
                         hello@deploy.finance
                     </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================

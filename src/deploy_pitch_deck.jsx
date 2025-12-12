@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, createContext, useContext, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, Linkedin, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
+import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import Navbar from './components/Navbar';
 
@@ -225,13 +225,12 @@ const processFundingData = (rawData, range) => {
     const now = Date.now();
     
     const config = {
-        '24H': { cutoff: 24 * 60 * 60 * 1000, maxPoints: 24, groupBy: 'hour' },
-        '1W': { cutoff: 7 * 24 * 60 * 60 * 1000, maxPoints: 28, groupBy: 'day' },
         '1M': { cutoff: 30 * 24 * 60 * 60 * 1000, maxPoints: 30, groupBy: 'day' },
-        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90, groupBy: 'day' }
+        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90, groupBy: 'day' },
+        '6M': { cutoff: 180 * 24 * 60 * 60 * 1000, maxPoints: 180, groupBy: 'day' }
     };
-    
-    const { cutoff, maxPoints, groupBy } = config[range] || config['3M'];
+
+    const { cutoff, maxPoints, groupBy } = config[range] || config['6M'];
     const filtered = sorted.filter(item => item.time >= now - cutoff);
     
     // Calculate accurate average APY from ALL filtered funding rates (before any grouping/downsampling)
@@ -304,12 +303,15 @@ const calculateAPYStats = (rawData) => {
     const lastDayData = sorted.filter(item => item.time >= oneDayAgo);
     const liveAPY = calcAvgAPY(lastDayData);
     
-    // Calculate peak daily APY from past 90 days (absolute max, not rolling avg)
+    // Calculate peak daily APY from past 180 days / 6 months (absolute max, not rolling avg)
+    const sixMonthCutoff = now - (180 * 24 * 60 * 60 * 1000);
+    const sixMonthData = sorted.filter(item => item.time >= sixMonthCutoff);
+    
     let peakDailyAPY = null;
-    if (threeMonthData.length > 0) {
+    if (sixMonthData.length > 0) {
         // Group by day
         const dailyRates = {};
-        threeMonthData.forEach(item => {
+        sixMonthData.forEach(item => {
             const date = new Date(item.time);
             const dayKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
             if (!dailyRates[dayKey]) dailyRates[dayKey] = [];
@@ -377,7 +379,7 @@ const useFundingData = () => {
 
 const APYChart = ({ compact = false }) => {
     const { fundingHistory, isLoading } = useFundingData();
-    const [activeRange, setActiveRange] = useState('3M');
+    const [activeRange, setActiveRange] = useState('6M');
     const [chartData, setChartData] = useState([]);
     const [rangeAvgAPY, setRangeAvgAPY] = useState(null);
 
@@ -389,7 +391,7 @@ const APYChart = ({ compact = false }) => {
         }
     }, [activeRange, fundingHistory]);
 
-    const ranges = ['1W', '1M', '3M'];
+    const ranges = ['1M', '3M', '6M'];
 
     return (
         <div className="w-full h-full bg-bone border border-black p-3 md:p-5 flex flex-col">
@@ -703,10 +705,10 @@ const SolutionSlide = () => {
                     <SectionTag>03 — The Solution</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        <span className="text-accent italic">dUSD</span> yields on Perp DEXes.
+                        <span className="text-accent italic">Pilot Phase</span> complete on Hyperliquid.
                     </h2>
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
-                        We're starting on <span className="font-bold text-black">Hyperliquid</span>—the fastest-growing perp DEX with the deepest liquidity.
+                        Our self-custodial version attracted <span className="font-bold text-black">significant user traction</span>, proving demand for delta neutral yields on Perp DEXes.
                     </p>
                     
                     {/* Key Value Props */}
@@ -748,7 +750,7 @@ const SolutionSlide = () => {
                                     decimals={1}
                                 />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">90D Peak APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">6M Peak APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
@@ -759,7 +761,7 @@ const SolutionSlide = () => {
                                     decimals={1}
                                 />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Realised APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Pilot Realised APY</div>
                         </div>
                     </div>
                     
@@ -794,10 +796,10 @@ const SolutionSlide = () => {
 
 const BetaSlide = () => {
     const stats = [
-        { label: "TVL", value: "50", prefix: "$", suffix: "M", icon: DollarSign },
-        { label: "Yield Generated", value: "2.1", prefix: "$", suffix: "M", icon: TrendingUp },
-        { label: "Active Wallets", value: "3500", prefix: "", suffix: "+", icon: Wallet },
-        { label: "Time to Threshold", value: "1", prefix: "", suffix: " Week", icon: Zap },
+        { label: "TVL", value: "15", prefix: "$", suffix: "M", icon: DollarSign },
+        { label: "Yield Generated", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
+        { label: "Active Wallets", value: "2000", prefix: "", suffix: "+", icon: Wallet },
+        { label: "Time to Threshold", value: "2", prefix: "", suffix: " Weeks", icon: Zap },
     ];
 
     return (
@@ -815,7 +817,7 @@ const BetaSlide = () => {
                         Private Beta: <span className="text-accent italic">Proof of Concept</span>
                     </h2>
                     <p className="text-base md:text-lg font-mono text-white/40 mb-8 md:mb-12">
-                        We hit our $50M TVL threshold in just <span className="text-accent font-bold">one week</span>.
+                        We hit our $15M TVL threshold in <span className="text-accent font-bold">2 weeks</span> with no marketing.
                     </p>
                     
                     {/* Stats Grid */}
@@ -949,13 +951,12 @@ const MechanicsSlide = () => {
 
 const PartnersSlide = () => {
     const partners = [
-        { name: "Conical", type: "Integration", description: "Strategic integration partner" },
         { name: "FalconX", type: "Partnership", description: "Prime brokerage partner" },
     ];
 
     const commitments = [
-        { entity: "Strategic LPs", amount: "$25M+" },
-        { entity: "Institutional Partners", amount: "$15M+" },
+        { entity: "Strategic LPs", amount: "$45M+" },
+        { entity: "Institutional Partners", amount: "$25M+" },
         { entity: "Community Allocation", amount: "$10M+" },
     ];
 
@@ -971,51 +972,55 @@ const PartnersSlide = () => {
                     <SectionTag>06 — Commitments & Partnerships</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        <span className="text-accent italic">$50M+</span> TVL Committed
+                        <span className="text-accent italic">$80M+</span> TVL Committed
                     </h2>
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12">
                         Strategic partners and institutional backers ready to deploy.
                     </p>
                     
-                    {/* Partners Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                        {partners.map((partner) => (
-                            <div key={partner.name} className="border-2 border-black bg-white p-5 md:p-8 flex items-center gap-4">
-                                <div className="w-16 h-16 bg-black/5 flex items-center justify-center">
-                                    <Handshake className="w-8 h-8 text-accent" />
-                                </div>
-                                <div>
-                                    <div className="font-serif text-xl md:text-2xl mb-1">{partner.name}</div>
-                                    <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-1">{partner.type}</div>
-                                    <div className="font-mono text-xs text-black/50">{partner.description}</div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                        {/* TVL Commitments */}
+                        <div className="border-2 border-black bg-white">
+                            <div className="p-4 md:p-5 border-b border-black bg-black/5">
+                                <h3 className="font-mono text-xs uppercase tracking-widest">TVL Commitments Breakdown</h3>
+                            </div>
+                            <div className="divide-y divide-black/10">
+                                {commitments.map((item) => (
+                                    <div key={item.entity} className="flex items-center justify-between p-4 md:p-5">
+                                        <span className="font-mono text-sm">{item.entity}</span>
+                                        <span className="font-serif text-xl text-accent">{item.amount}</span>
+                                    </div>
+                                ))}
+                                <div className="flex items-center justify-between p-4 md:p-5 bg-accent/5">
+                                    <span className="font-mono text-sm font-bold">Total Committed</span>
+                                    <span className="font-serif text-2xl text-accent font-bold">$80M+</span>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                    
-                    {/* TVL Commitments */}
-                    <div className="border-2 border-black bg-white">
-                        <div className="p-4 md:p-5 border-b border-black bg-black/5">
-                            <h3 className="font-mono text-xs uppercase tracking-widest">TVL Commitments Breakdown</h3>
                         </div>
-                        <div className="divide-y divide-black/10">
-                            {commitments.map((item, i) => (
-                                <div key={item.entity} className="flex items-center justify-between p-4 md:p-5">
-                                    <span className="font-mono text-sm">{item.entity}</span>
-                                    <span className="font-serif text-xl text-accent">{item.amount}</span>
+                        
+                        {/* Partners */}
+                        <div className="border-2 border-black bg-white flex flex-col">
+                            <div className="p-4 md:p-5 border-b border-black bg-black/5">
+                                <h3 className="font-mono text-xs uppercase tracking-widest">Key Partners</h3>
+                            </div>
+                            <div className="flex-1 flex flex-col justify-center p-6 md:p-8">
+                                {partners.map((partner) => (
+                                    <div key={partner.name} className="flex items-center gap-4">
+                                        <div className="w-14 h-14 bg-accent/10 flex items-center justify-center">
+                                            <Handshake className="w-7 h-7 text-accent" />
+                                        </div>
+                                        <div>
+                                            <div className="font-serif text-2xl md:text-3xl mb-1">{partner.name}</div>
+                                            <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-1">{partner.type}</div>
+                                            <div className="font-mono text-sm text-black/50">{partner.description}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="mt-6 pt-4 border-t border-black/10 font-mono text-xs text-black/40">
+                                    + Additional strategic partners in discussion
                                 </div>
-                            ))}
-                            <div className="flex items-center justify-between p-4 md:p-5 bg-accent/5">
-                                <span className="font-mono text-sm font-bold">Total Committed</span>
-                                <span className="font-serif text-2xl text-accent font-bold">$50M+</span>
                             </div>
                         </div>
-                    </div>
-                    
-                    {/* Verifiable Note */}
-                    <div className="mt-6 flex items-center gap-3 font-mono text-xs text-black/40">
-                        <Shield className="w-4 h-4" />
-                        <span>All commitments are verifiable and documented</span>
                     </div>
                 </motion.div>
             </div>
@@ -1029,17 +1034,10 @@ const PartnersSlide = () => {
 
 const TokenomicsSlide = () => {
     const allocation = [
-        { label: "Team & Advisors", percent: 20, color: "bg-accent" },
-        { label: "Investors", percent: 25, color: "bg-black" },
-        { label: "Community & Ecosystem", percent: 35, color: "bg-accent/60" },
-        { label: "Treasury", percent: 20, color: "bg-black/40" },
-    ];
-
-    const investors = [
-        { name: "Lead Investor 1", type: "VC" },
-        { name: "Lead Investor 2", type: "VC" },
-        { name: "Strategic Angel 1", type: "Angel" },
-        { name: "Strategic Angel 2", type: "Angel" },
+        { label: "Community & Ecosystem", percent: 35, color: "bg-accent", desc: "Rewards, incentives & growth" },
+        { label: "Investors", percent: 25, color: "bg-black", desc: "Strategic backers & VCs" },
+        { label: "Team & Advisors", percent: 20, color: "bg-accent/60", desc: "4-year vesting schedule" },
+        { label: "Treasury", percent: 20, color: "bg-black/40", desc: "Protocol development & ops" },
     ];
 
     return (
@@ -1053,61 +1051,44 @@ const TokenomicsSlide = () => {
                 >
                     <SectionTag>07 — Tokenomics</SectionTag>
                     
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
                         Designed for <span className="text-accent italic">sustainable growth</span>.
                     </h2>
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
+                        Token distribution aligned with long-term protocol success.
+                    </p>
                     
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                        {/* Token Allocation */}
-                        <div className="border-2 border-black bg-white p-5 md:p-8">
-                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Token Allocation</h3>
-                            
-                            {/* Visual Bar */}
-                            <div className="h-8 md:h-10 flex mb-6 border border-black">
-                                {allocation.map((item) => (
-                                    <div 
-                                        key={item.label}
-                                        className={`${item.color} h-full`}
-                                        style={{ width: `${item.percent}%` }}
-                                    />
-                                ))}
-                            </div>
-                            
-                            {/* Legend */}
-                            <div className="space-y-3">
-                                {allocation.map((item) => (
-                                    <div key={item.label} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-3 h-3 ${item.color}`} />
-                                            <span className="font-mono text-sm">{item.label}</span>
-                                        </div>
-                                        <span className="font-mono text-sm font-bold">{item.percent}%</span>
-                                    </div>
-                                ))}
-                            </div>
+                    {/* Token Allocation - Full Width */}
+                    <div className="border-2 border-black bg-white p-5 md:p-8">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Token Allocation</h3>
+                        
+                        {/* Visual Bar */}
+                        <div className="h-10 md:h-12 flex mb-8 border border-black overflow-hidden">
+                            {allocation.map((item) => (
+                                <div 
+                                    key={item.label}
+                                    className={`${item.color} h-full relative group`}
+                                    style={{ width: `${item.percent}%` }}
+                                >
+                                    <span className="absolute inset-0 flex items-center justify-center font-mono text-xs md:text-sm font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {item.percent}%
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                         
-                        {/* Investors */}
-                        <div className="border-2 border-black bg-white p-5 md:p-8">
-                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Current Investors</h3>
-                            
-                            <div className="space-y-4">
-                                {investors.map((investor, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-3 border border-black/10 hover:border-black transition-colors">
-                                        <div className="w-10 h-10 bg-black/5 flex items-center justify-center">
-                                            <Building2 className="w-5 h-5 text-black/40" />
-                                        </div>
-                                        <div>
-                                            <div className="font-mono text-sm font-bold">{investor.name}</div>
-                                            <div className="font-mono text-[10px] uppercase tracking-widest text-accent">{investor.type}</div>
-                                        </div>
+                        {/* Allocation Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                            {allocation.map((item) => (
+                                <div key={item.label} className="p-4 border border-black/10 hover:border-black transition-colors">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className={`w-3 h-3 ${item.color}`} />
+                                        <span className="font-mono text-2xl md:text-3xl font-bold">{item.percent}%</span>
                                     </div>
-                                ))}
-                            </div>
-                            
-                            <div className="mt-6 pt-4 border-t border-black/10 font-mono text-xs text-black/40">
-                                + Additional angels and strategic partners
-                            </div>
+                                    <div className="font-mono text-xs md:text-sm font-medium mb-1">{item.label}</div>
+                                    <div className="font-mono text-[10px] md:text-xs text-black/40">{item.desc}</div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </motion.div>
@@ -1127,24 +1108,21 @@ const TeamSlide = () => {
             role: "Founder & CEO", 
             bio: "Product visionary. Built and scaled multiple fintech products.",
             prev: "Serial Entrepreneur",
-            twitter: "#",
-            linkedin: "#"
+            twitter: "https://x.com/TheWhale_hunter"
         },
         { 
             name: "Amit Trehan", 
             role: "CTO", 
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
-            twitter: "#",
-            linkedin: "#"
+            twitter: "https://x.com/rangesnipe"
         },
         { 
             name: "Deb", 
             role: "COO", 
             bio: "Operations expert. Scaling teams and processes.",
             prev: "Operations Background",
-            twitter: "#",
-            linkedin: "#"
+            twitter: "https://x.com/WhatIsDeb"
         }
     ];
 
@@ -1199,11 +1177,8 @@ const TeamSlide = () => {
                                 
                                 {/* Social Links */}
                                 <div className="flex gap-2">
-                                    <a href={member.twitter} className="p-2 border border-black/20 hover:bg-black hover:text-white transition-colors">
+                                    <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="p-2 border border-black/20 hover:bg-black hover:text-white transition-colors">
                                         <Twitter className="w-3.5 h-3.5" />
-                                    </a>
-                                    <a href={member.linkedin} className="p-2 border border-black/20 hover:bg-black hover:text-white transition-colors">
-                                        <Linkedin className="w-3.5 h-3.5" />
                                     </a>
                                 </div>
                             </div>
@@ -1287,7 +1262,7 @@ const AskSlide = () => {
                     {/* Social Links */}
                     <div className="flex justify-center gap-4 md:gap-6 mb-8 md:mb-10">
                         <a 
-                            href="https://twitter.com/deploy_finance" 
+                            href="https://x.com/DeployFinance" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 border border-white/20 px-4 md:px-6 py-3 md:py-4 font-mono text-xs md:text-sm text-white/70 hover:bg-white hover:text-black transition-colors"
@@ -1296,12 +1271,15 @@ const AskSlide = () => {
                             Twitter
                         </a>
                         <a 
-                            href="https://discord.gg/deploy" 
+                            href="https://t.me/DeployFinanceChat" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 border border-white/20 px-4 md:px-6 py-3 md:py-4 font-mono text-xs md:text-sm text-white/70 hover:bg-white hover:text-black transition-colors"
                         >
-                            Discord
+                            <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                            Telegram
                         </a>
                     </div>
                     

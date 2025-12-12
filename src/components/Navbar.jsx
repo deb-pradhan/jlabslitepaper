@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 const navItems = [
     { path: '/', label: 'Litepaper' },
     { path: '/pitch', label: 'Pitch Deck' },
-    { path: '/faq', label: 'FAQ' },
 ];
 
 const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle = false }) => {
@@ -39,10 +38,10 @@ const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle =
                         </button>
                     )}
                     <Link to="/">
-                        <img 
-                            src="/deploy_logo.png" 
-                            alt="Deploy." 
-                            className={`h-5 md:h-6 ${dark ? 'invert' : ''}`} 
+<img
+                            src={dark ? "/deploy_logo_dark.png" : "/deploy_logo.png"}
+                            alt="Deploy."
+                            className="h-5 md:h-6"
                         />
                     </Link>
                 </div>
@@ -114,7 +113,7 @@ const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle =
                             }
                         `}
                     >
-                        Launch App
+                        Launch Beta
                     </a>
                 </div>
             </header>
@@ -170,7 +169,7 @@ const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle =
                                 rel="noopener noreferrer"
                                 className="block w-full py-3 bg-accent text-white text-center font-mono text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors"
                             >
-                                Launch App
+                                Launch Beta
                             </a>
                         </div>
                     </motion.div>

@@ -112,9 +112,8 @@ const Layout = ({ children, onOpenChat }) => {
                         <div className="flex gap-6 font-mono text-xs">
                             <Link to="/" className="hover:text-accent transition-colors">Litepaper</Link>
                             <Link to="/pitch" className="hover:text-accent transition-colors">Pitch Deck</Link>
-                            <Link to="/faq" className="hover:text-accent transition-colors">FAQ</Link>
-                            <a href="https://twitter.com/deploy_finance" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Twitter</a>
-                            <a href="https://discord.gg/deploy" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Discord</a>
+                            <a href="https://x.com/DeployFinance" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Twitter</a>
+                            <a href="https://t.me/DeployFinanceChat" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Telegram</a>
                         </div>
                     </div>
                 </footer>

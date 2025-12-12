@@ -488,7 +488,7 @@ const TitleSlide = () => (
                 {/* Category Badge */}
                 <div className="inline-flex items-center gap-3 mb-10 md:mb-14 border border-black px-4 py-2.5 bg-white">
                     <div className="w-2 h-2 bg-accent" />
-                    <span className="font-mono text-[11px] md:text-xs tracking-[0.2em] uppercase">Delta Neutral Yields using Hyperliquid</span>
+                    <span className="font-mono text-[11px] md:text-xs tracking-[0.2em] uppercase">Volatility Neutral. Yield Positive.</span>
                         </div>
                         
                 {/* Main Headline */}
@@ -538,7 +538,7 @@ const MarketSlide = () => {
                     <SectionTag>01 — Market Opportunity</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        The <span className="text-accent italic">$160B+</span> stablecoin market is hungry for yield.
+                        The <span className="text-accent italic">$160B+</span> stablecoin market is seeking yield.
                     </h2>
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-3xl">
                         With traditional yields compressing and DeFi complexity rising, capital seeks efficient, risk-adjusted returns.
@@ -616,8 +616,8 @@ const ProblemSlide = () => (
                 <SectionTag dark>02 — The Problem</SectionTag>
                 
                 <h2 className="text-xl md:text-3xl lg:text-4xl font-serif leading-tight mb-8 md:mb-12">
-                    Delta-neutral yields are <span className="text-accent italic">dying on CEXes.</span><br/>
-                    The future is on Perp DEXes.
+                    Delta-neutral yields are <span className="text-accent italic">disappearing on CEXes.</span><br/>
+                    The future is on Perpetual DEXes.
                 </h2>
                 
                 {/* Problem Points */}
@@ -674,10 +674,10 @@ const ProblemSlide = () => (
                 {/* The Shift */}
                 <div className="border-l-2 border-accent pl-6 md:pl-8">
                     <p className="text-base md:text-xl font-serif text-white leading-relaxed mb-2">
-                        The alpha has moved to <span className="text-accent">Perp DEXes</span>.
+                        The alpha has moved to <span className="text-accent">Perpetual DEXes</span>.
                     </p>
                     <p className="font-mono text-sm text-white/50">
-                        Higher funding rates, deeper liquidity, and on-chain transparency. That's where Deploy operates.
+                        Higher funding rates, deeper liquidity, and on-chain transparency.
                     </p>
                 </div>
             </motion.div>
@@ -704,10 +704,10 @@ const SolutionSlide = () => {
                     <SectionTag>03 — The Solution</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        <span className="text-accent italic">Pilot Phase</span> complete on Hyperliquid.
+                        <span className="text-accent italic">We're already building the future.</span>
                     </h2>
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
-                        Our self-custodial version attracted <span className="font-bold text-black">significant user traction</span>, proving demand for delta neutral yields on Perp DEXes.
+                        Our pilot on Hyperliquid proved the demand—<span className="font-bold text-black">significant user traction</span> on our self-custodial delta-neutral solution.
                     </p>
                     
                     {/* Key Value Props */}
@@ -813,7 +813,7 @@ const BetaSlide = () => {
                     <SectionTag dark>04 — Deploy In Action</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        Private Beta: <span className="text-accent italic">Proof of Concept</span>
+                        Private Beta: <span className="text-accent italic">The Numbers Don't Lie</span>
                     </h2>
                     <p className="text-base md:text-lg font-mono text-white/40 mb-8 md:mb-12">
                         We hit our $15M TVL threshold in <span className="text-accent font-bold">2 weeks</span> with no marketing.
@@ -1033,10 +1033,12 @@ const PartnersSlide = () => {
 
 const TokenomicsSlide = () => {
     const allocation = [
-        { label: "Community & Ecosystem", percent: 35, color: "bg-accent", desc: "Rewards, incentives & growth" },
+        { label: "Ecosystem", percent: 35, color: "bg-accent", desc: "Rewards, incentives & growth" },
         { label: "Investors", percent: 25, color: "bg-black", desc: "Strategic backers & VCs" },
-        { label: "Team & Advisors", percent: 20, color: "bg-accent/60", desc: "4-year vesting schedule" },
-        { label: "Treasury", percent: 20, color: "bg-black/40", desc: "Protocol development & ops" },
+        { label: "Treasury", percent: 20, color: "bg-black/60", desc: "Protocol development & ops" },
+        { label: "Team", percent: 10, color: "bg-accent/60", desc: "4-year vesting schedule" },
+        { label: "Advisors", percent: 5, color: "bg-black/40", desc: "Strategic guidance" },
+        { label: "Liquidity", percent: 5, color: "bg-accent/30", desc: "DEX & CEX liquidity" },
     ];
 
     return (

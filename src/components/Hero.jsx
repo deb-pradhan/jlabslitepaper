@@ -29,7 +29,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-                Delta-Neutral Yields on Hyperliquid
+                The Neobank for the Digital Age
             </motion.h2>
 
             <motion.div
@@ -40,23 +40,23 @@ const Hero = () => {
             >
                 <h3 className="text-sm font-bold uppercase tracking-wider mb-4">Abstract</h3>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    The $160B+ stablecoin market is hungry for yield. Delta-neutral funding rate arbitrage has long been one of the most reliable yield sources in crypto—but the alpha on centralized exchanges is dying. Yields have compressed to 5-8% as institutional capital floods in, counterparty risk remains ever-present, and the largest platforms are increasingly allocating to T-Bills, capping returns at the risk-free rate of ~4.5%.
+                    The cryptocurrency ecosystem has matured into a multi trillion dollar asset class, yet the majority of its capital remains idle. More than one trillion dollars sits unproductive in wallets and vaults, earning nothing. Holders face a painful trade-off: keep full control and accept zero yield, or chase returns through opaque protocols, centralized custodians, or unsustainable token emission schemes that regularly collapse.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    <strong>The alpha has moved to Perp DEXes. That's where Deploy operates.</strong>
+                    <strong>Deploy ends this false choice.</strong>
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    Deploy is battle-tested financial infrastructure that captures delta-neutral yields on Hyperliquid—delivering 15-25% APY through perpetual futures funding rate arbitrage. Higher funding rates, deeper liquidity, and full on-chain transparency. Users deposit stablecoins, receive dUSD, and earn yield automatically while maintaining full control of their assets.
+                    Deploy is battle tested, self custodial financial infrastructure that automatically converts idle Bitcoin, Ethereum, and stablecoins into productive, high quality collateral called D Assets. These assets remain fully under the user’s control while continuously harvesting the most reliable and uncorrelated yield source in crypto: perpetual futures funding rates.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    The strategy is simple: when crypto markets are bullish (most of the time), longs pay shorts. Deploy maintains delta-neutral positions, collecting the funding rate premium without directional exposure. This yield is structural—it has existed on more than 95% of all trading days since perpetual futures were invented.
+                    The ultimate vision is far larger than another yield optimizer. Deploy is building the first true Neobank of the crypto era, a universal financial layer where individuals and institutions never need to sell their superior assets to live, spend, borrow, or grow wealth. Hold value in Bitcoin and Ethereum. Hold debt and daily spending power in DUSD, the yield-bearing stablecoin that finally makes “inferior money” work for you instead of against you.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl">
-                    This is not speculation. This is infrastructure that has already survived extreme market cycles, delivered positive returns during every crash, and attracted $15M+ in deposits with zero liquidations. Our pilot phase proved the demand—now we're scaling.
+                    This is not speculation. This is infrastructure that has already survived five years of extreme market cycles, delivered positive returns during every crash, and attracted high net worth individuals, family offices, and hedge funds with fifteen million dollars in deposits and zero liquidations.
                 </p>
 
                 <div className="mt-8 font-serif italic text-lg text-paper-accent">
-                    Hedge the volatility. Unlock more yield.
+                    The Neobank era starts now. Join us.
                 </div>
             </motion.div>
         </section>

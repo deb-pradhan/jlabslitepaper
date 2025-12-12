@@ -222,6 +222,10 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 function Litepaper() {
     const [isChatOpen, setIsChatOpen] = useState(false);
 
+    useEffect(() => {
+        document.title = 'Deploy Litepaper';
+    }, []);
+
     return (
         <>
             <Layout onOpenChat={() => setIsChatOpen(true)}>

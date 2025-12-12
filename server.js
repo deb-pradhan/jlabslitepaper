@@ -42,7 +42,7 @@ dUSD is the yield-bearing stablecoin at the core of Deploy. Deposit stablecoins,
 ## CURRENT STATUS (as of December 2025)
 
 - **dUSD is currently in PRIVATE BETA** - not yet publicly available
-- **Public Launch: Mid-December 2025** (imminent)
+- **Public Launch: January 2026**
 - To get early access or learn more: contact hello@deploy.finance or join Telegram
 
 ---
@@ -285,7 +285,7 @@ Twitter: @WhatIsDeb
 
 ## ROADMAP
 
-- **December 2025:** DUSD Public Launch on Ethereum mainnet (pre-deposit commitments in place)
+- **January 2026:** dUSD Public Launch on Ethereum mainnet (pre-deposit commitments in place)
 - **Q1 2026:** Full Transparency Dashboard & third-party attestations live
 - **Q1-Q2 2026:** First wave of lending protocol integrations + physical debit card spending via partners
 - **Mid-2026:** Privacy-enhanced DUSD + Canton Network enterprise deployment

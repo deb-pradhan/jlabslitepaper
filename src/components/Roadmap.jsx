@@ -42,7 +42,7 @@ const Roadmap = () => {
                     {/* Content Card */}
                     <div className="bg-paper-card p-6 rounded-xl border border-paper-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                         <span className="inline-block px-2 py-1 rounded bg-paper-bg text-xs font-bold uppercase tracking-wider text-paper-muted mb-3 border border-paper-border">
-                            Mid-December 2025
+                            January 2026
                         </span>
                         <h4 className="text-lg md:text-xl font-serif font-bold mb-2 text-paper-text">
                             dUSD Public Launch

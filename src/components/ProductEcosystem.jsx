@@ -25,9 +25,9 @@ const ProductEcosystem = () => {
             </div>
 
             <div className="mb-12">
-                <h3 className="text-xl font-bold mb-4">4.2 DUSD: The Yield-Bearing Stablecoin That Finally Makes Sense</h3>
+                <h3 className="text-xl font-bold mb-4">4.2 dUSD: The Yield-Bearing Stablecoin That Finally Makes Sense</h3>
                 <p className="mb-6">
-                    DUSD is the consumer-facing manifestation of the Neobank vision. It is a fully collateralized, self-custodial, yield-bearing dollar token designed to become the default spending currency for the entire crypto economy.
+                    dUSD is a fully collateralized, yield-bearing dollar token powered by delta-neutral strategies on Hyperliquid. It delivers sustainable 15-25% APY from real economic demand—not token emissions or T-Bill allocations.
                 </p>
 
                 <div className="p-6 bg-paper-bg border border-paper-border rounded-lg mb-8">

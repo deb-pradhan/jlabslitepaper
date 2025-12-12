@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, createContext, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -48,11 +48,10 @@ const GridBackground = () => (
 
 const SlideContainer = ({ children, className = "", dark = false }) => (
     <div className={`
-        relative w-full min-h-screen 
-        flex flex-col justify-center items-center 
+        relative w-full min-h-full
+        flex flex-col justify-start items-center 
         px-6 md:px-16 lg:px-24 
-        py-24 md:py-16
-        overflow-x-hidden
+        py-8 md:py-12
         ${dark ? 'bg-black text-white' : 'bg-bone text-black'}
         ${className}
     `}>
@@ -1492,10 +1491,13 @@ function DeployPitchDeckInner() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isIndexOpen, setIsIndexOpen] = useState(false);
+    const mainRef = useRef(null);
+    const scrollAccumulator = useRef(0);
 
-    const handleScroll = useCallback((direction) => {
+    const changeSlide = useCallback((direction) => {
         if (isScrolling || isIndexOpen) return;
         setIsScrolling(true);
+        scrollAccumulator.current = 0;
         setCurrentSlide(prev => {
             const next = direction === 'next' 
                 ? Math.min(prev + 1, SLIDES.length - 1)
@@ -1503,20 +1505,34 @@ function DeployPitchDeckInner() {
             if (next !== prev) haptic.medium();
             return next;
         });
+        // Reset scroll position to top after slide change
+        setTimeout(() => {
+            if (mainRef.current) {
+                mainRef.current.scrollTop = 0;
+            }
+        }, 50);
         setTimeout(() => setIsScrolling(false), 700);
     }, [isScrolling, isIndexOpen]);
 
     const goToPrev = () => {
         if (currentSlide > 0) {
             haptic.light();
+            scrollAccumulator.current = 0;
             setCurrentSlide(prev => prev - 1);
+            setTimeout(() => {
+                if (mainRef.current) mainRef.current.scrollTop = 0;
+            }, 50);
         }
     };
 
     const goToNext = () => {
         if (currentSlide < SLIDES.length - 1) {
             haptic.light();
+            scrollAccumulator.current = 0;
             setCurrentSlide(prev => prev + 1);
+            setTimeout(() => {
+                if (mainRef.current) mainRef.current.scrollTop = 0;
+            }, 50);
         }
     };
 
@@ -1525,48 +1541,94 @@ function DeployPitchDeckInner() {
         let touchStartX = 0;
         
         const onWheel = (e) => {
-            if (Math.abs(e.deltaY) > 30) handleScroll(e.deltaY > 0 ? 'next' : 'prev');
+            if (isIndexOpen || isScrolling) return;
+            
+            const container = mainRef.current;
+            if (!container) return;
+            
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const isAtTop = scrollTop <= 1;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+            const hasScrollableContent = scrollHeight > clientHeight + 10;
+            
+            // If content is scrollable, let it scroll naturally
+            if (hasScrollableContent) {
+                // Scrolling down but not at bottom - let it scroll
+                if (e.deltaY > 0 && !isAtBottom) return;
+                // Scrolling up but not at top - let it scroll
+                if (e.deltaY < 0 && !isAtTop) return;
+            }
+            
+            // Accumulate scroll momentum for slide change
+            scrollAccumulator.current += e.deltaY;
+            
+            // Only change slide after sufficient scroll intent (threshold)
+            const threshold = 150;
+            if (Math.abs(scrollAccumulator.current) > threshold) {
+                changeSlide(scrollAccumulator.current > 0 ? 'next' : 'prev');
+            }
         };
+        
         const onKeyDown = (e) => {
-            if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) { e.preventDefault(); handleScroll('next'); }
-            if (['ArrowUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); handleScroll('prev'); }
+            if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) { e.preventDefault(); changeSlide('next'); }
+            if (['ArrowUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); changeSlide('prev'); }
             if (e.key === 'Escape') setIsIndexOpen(false);
         };
+        
         const onTouchStart = (e) => {
             touchStartY = e.touches[0].clientY;
             touchStartX = e.touches[0].clientX;
         };
+        
         const onTouchEnd = (e) => {
-            if (isIndexOpen) return;
+            if (isIndexOpen || isScrolling) return;
+            
+            const container = mainRef.current;
+            if (!container) return;
+            
             const touchEndY = e.changedTouches[0].clientY;
             const touchEndX = e.changedTouches[0].clientX;
             const deltaY = touchStartY - touchEndY;
             const deltaX = touchStartX - touchEndX;
             
             if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
-                handleScroll(deltaY > 0 ? 'next' : 'prev');
+                const { scrollTop, scrollHeight, clientHeight } = container;
+                const isAtTop = scrollTop <= 1;
+                const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+                const hasScrollableContent = scrollHeight > clientHeight + 10;
+                
+                // Only change slide if at boundary or no scrollable content
+                if (!hasScrollableContent || (deltaY > 0 && isAtBottom) || (deltaY < 0 && isAtTop)) {
+                    changeSlide(deltaY > 0 ? 'next' : 'prev');
+                }
             }
         };
         
-        window.addEventListener('wheel', onWheel, { passive: true });
+        // Use the container for wheel events to check scroll position
+        const container = mainRef.current;
+        if (container) {
+            container.addEventListener('wheel', onWheel, { passive: true });
+        }
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('touchstart', onTouchStart, { passive: true });
         window.addEventListener('touchend', onTouchEnd, { passive: true });
         
         return () => {
-            window.removeEventListener('wheel', onWheel);
+            if (container) {
+                container.removeEventListener('wheel', onWheel);
+            }
             window.removeEventListener('keydown', onKeyDown);
             window.removeEventListener('touchstart', onTouchStart);
             window.removeEventListener('touchend', onTouchEnd);
         };
-    }, [handleScroll, isIndexOpen]);
+    }, [changeSlide, isIndexOpen, isScrolling]);
 
     const slideComponents = [TitleSlide, MarketSlide, ProblemSlide, SolutionSlide, BetaSlide, MechanicsSlide, PartnersSlide, TokenomicsSlide, TeamSlide, AskSlide];
     const CurrentSlideComponent = slideComponents[currentSlide];
     const isDarkSlide = DARK_SLIDES.includes(currentSlide);
 
     return (
-        <div className={`font-mono min-h-screen w-screen overflow-hidden relative selection:bg-accent selection:text-white ${isDarkSlide ? 'bg-black text-white' : 'bg-bone text-black'}`}>
+        <div className={`font-mono h-screen w-screen overflow-hidden relative selection:bg-accent selection:text-white ${isDarkSlide ? 'bg-black text-white' : 'bg-bone text-black'}`}>
             <NoiseOverlay />
             {!isDarkSlide && <GridBackground />}
             
@@ -1574,18 +1636,23 @@ function DeployPitchDeckInner() {
             <Navbar dark={isDarkSlide} />
 
             {/* Main Content */}
-            <AnimatePresence mode="wait">
-                <motion.main
-                    key={currentSlide}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.35 }}
-                    className="w-full min-h-screen pt-14 md:pt-16 pb-14 md:pb-16"
-                >
-                    <CurrentSlideComponent />
-                </motion.main>
-            </AnimatePresence>
+            <main
+                ref={mainRef}
+                className="w-full h-screen pt-14 md:pt-16 pb-14 md:pb-16 overflow-y-auto overflow-x-hidden"
+            >
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentSlide}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35 }}
+                        className="min-h-full"
+                    >
+                        <CurrentSlideComponent />
+                    </motion.div>
+                </AnimatePresence>
+            </main>
             
             {/* Bottom Slide Navigation */}
             <BottomSlideNav

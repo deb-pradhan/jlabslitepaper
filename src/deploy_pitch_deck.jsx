@@ -633,7 +633,7 @@ const ProblemSlide = () => (
                         <ul className="space-y-3">
                             <li className="flex gap-3 font-mono text-sm text-white/70">
                                 <span className="text-red-400">→</span>
-                                Funding rate arbitrage yields compressed to 5-8% on major CEXes
+                                Funding rate arbitrage yields compressed to 3-5% on major CEXes
                             </li>
                             <li className="flex gap-3 font-mono text-sm text-white/70">
                                 <span className="text-red-400">→</span>

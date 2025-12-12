@@ -21,16 +21,16 @@ const ChatMessage = ({ message, isUser }) => (
     <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
+        className={`flex gap-2 sm:gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
     >
         <div className={`
-            w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+            w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0
             ${isUser ? 'bg-accent text-white' : 'bg-black text-white'}
         `}>
-            {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+            {isUser ? <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
         </div>
         <div className={`
-            max-w-[80%] p-3 text-sm leading-relaxed
+            max-w-[85%] sm:max-w-[80%] p-2.5 sm:p-3 text-[13px] sm:text-sm leading-relaxed
             ${isUser 
                 ? 'bg-accent text-white rounded-2xl rounded-tr-sm' 
                 : 'bg-black/5 text-black rounded-2xl rounded-tl-sm'
@@ -43,7 +43,7 @@ const ChatMessage = ({ message, isUser }) => (
 
 const ChatSidebar = ({ isOpen, onClose }) => {
     const [messages, setMessages] = useState([
-        { text: "Hi! I'm the Deploy AI assistant. Ask me anything about Deploy, D-Assets, yield strategies, or how to get started.", isUser: false }
+        { text: "Hi! I'm the Deploy Agent. Ask me anything about dUSD, delta-neutral yield strategies on Hyperliquid, our 15-25% APY, or how to get started with Deploy Finance.", isUser: false }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -60,8 +60,21 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
-            inputRef.current.focus();
+            // Delay focus on mobile to prevent keyboard issues
+            setTimeout(() => inputRef.current?.focus(), 300);
         }
+    }, [isOpen]);
+
+    // Lock body scroll when chat is open on mobile
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [isOpen]);
 
     const handleSend = async () => {
@@ -130,42 +143,42 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                 initial={{ x: '100%' }}
                 animate={{ x: isOpen ? 0 : '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="fixed right-0 top-14 md:top-16 bottom-0 w-full sm:w-96 bg-bone border-l border-black z-50 flex flex-col"
+                className="fixed inset-0 sm:inset-auto sm:right-0 sm:top-16 sm:bottom-0 sm:w-96 bg-bone border-l border-black z-50 flex flex-col safe-area-inset"
             >
                 {/* Header */}
-                <div className="p-4 border-b border-black flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                            <Bot className="w-5 h-5 text-white" />
+                <div className="p-3 sm:p-4 border-b border-black flex items-center justify-between flex-shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center">
+                            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                         <div>
-                            <h3 className="font-serif font-bold">Deploy AI</h3>
-                            <p className="text-[10px] uppercase tracking-widest text-black/50">Ask anything</p>
+                            <h3 className="font-serif font-bold text-sm sm:text-base">Deploy Agent</h3>
+                            <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-black/50">Ask anything</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-black/10 transition-colors"
+                        className="p-2 sm:p-2.5 hover:bg-black/10 transition-colors rounded-lg"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-5 h-5 sm:w-5 sm:h-5" />
                     </button>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 overscroll-contain">
                     {messages.map((msg, i) => (
                         <ChatMessage key={i} message={msg.text} isUser={msg.isUser} />
                     ))}
                     {isTyping && (
-                        <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
-                                <Bot className="w-4 h-4" />
+                        <div className="flex gap-2 sm:gap-3">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0">
+                                <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </div>
-                            <div className="bg-black/5 rounded-2xl rounded-tl-sm p-3">
+                            <div className="bg-black/5 rounded-2xl rounded-tl-sm p-2.5 sm:p-3">
                                 <div className="flex gap-1">
-                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                 </div>
                             </div>
                         </div>
@@ -174,7 +187,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-black">
+                <div className="p-3 sm:p-4 border-t border-black flex-shrink-0 pb-safe">
                     <div className="flex gap-2">
                         <input
                             ref={inputRef}
@@ -182,19 +195,19 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={handleKeyPress}
-                            placeholder="Ask about Deploy..."
-                            className="flex-1 px-4 py-3 bg-white border border-black text-sm font-mono placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-accent"
+                            placeholder="Ask about dUSD, yields..."
+                            className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-black text-sm font-mono placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-accent rounded-none"
                         />
                         <button
                             onClick={handleSend}
                             disabled={!input.trim()}
-                            className="px-4 py-3 bg-accent text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 sm:px-4 py-2.5 sm:py-3 bg-accent text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <Send className="w-5 h-5" />
+                            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
-                    <p className="text-[10px] text-black/40 mt-2 text-center">
-                        Powered by Deploy AI • Responses may not always be accurate
+                    <p className="text-[9px] sm:text-[10px] text-black/40 mt-2 text-center">
+                        Powered by Deploy Agent • Responses may not always be accurate
                     </p>
                 </div>
             </motion.aside>
@@ -230,9 +243,9 @@ function Litepaper() {
             {/* Floating Chat Button (mobile) */}
             <button
                 onClick={() => setIsChatOpen(true)}
-                className="fixed bottom-6 right-6 w-14 h-14 bg-accent text-white rounded-full shadow-lg flex items-center justify-center hover:bg-black transition-colors z-40 lg:hidden"
+                className="fixed bottom-6 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-accent text-white rounded-full shadow-lg flex items-center justify-center hover:bg-black active:scale-95 transition-all z-40 lg:hidden mb-safe"
             >
-                <MessageSquare className="w-6 h-6" />
+                <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
         </>
     );

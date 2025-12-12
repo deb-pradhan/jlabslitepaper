@@ -1154,10 +1154,9 @@ const TeamSlide = () => {
                 >
                     <SectionTag>08 — The Team</SectionTag>
                     
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-2 md:mb-3">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
                         Builders from <span className="text-accent italic">DeFi & TradFi</span>
                     </h2>
-                    <p className="text-sm md:text-lg font-mono text-black/40 mb-8 md:mb-12">10+ team members bridging both worlds.</p>
                     
                     {/* Core Team */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8">
@@ -1230,6 +1229,8 @@ const TeamSlide = () => {
                             ))}
                         </div>
                     </div>
+                    
+                    <p className="text-sm md:text-lg font-mono text-black/40 mt-8 md:mt-12 text-center">10+ team members bridging both worlds.</p>
                 </motion.div>
             </div>
         </SlideContainer>

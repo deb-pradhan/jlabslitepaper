@@ -29,7 +29,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-                The Neobank for the Digital Age
+                Volatility Neutral. Yield Positive.
             </motion.h2>
 
             <motion.div
@@ -40,23 +40,23 @@ const Hero = () => {
             >
                 <h3 className="text-sm font-bold uppercase tracking-wider mb-4">Abstract</h3>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    The cryptocurrency ecosystem has matured into a multi trillion dollar asset class, yet the majority of its capital remains idle. More than one trillion dollars sits unproductive in wallets and vaults, earning nothing. Holders face a painful trade-off: keep full control and accept zero yield, or chase returns through opaque protocols, centralized custodians, or unsustainable token emission schemes that regularly collapse.
+                    The $160B+ stablecoin market is seeking yield. With traditional yields compressing and DeFi complexity rising, capital seeks efficient, risk-adjusted returns. More than 80% of stablecoin supply earns zero yield. Holders face a painful trade-off: keep full control and accept nothing, or chase returns through opaque protocols, centralized custodians, or unsustainable token emission schemes that regularly collapse.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
                     <strong>Deploy ends this false choice.</strong>
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    Deploy is battle tested, self custodial financial infrastructure that automatically converts idle Bitcoin, Ethereum, and stablecoins into productive, high quality collateral called D Assets. These assets remain fully under the user’s control while continuously harvesting the most reliable and uncorrelated yield source in crypto: perpetual futures funding rates.
+                    Deploy is battle-tested, self-custodial financial infrastructure that unlocks sustainable yield through delta-neutral strategies on perpetual DEXes. While CEX funding rates have compressed to 3-5% and platforms like Ethena allocate heavily to T-Bills, the alpha has moved to Hyperliquid and other on-chain venues where funding rates consistently deliver 15-25% APY.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl mb-6">
-                    The ultimate vision is far larger than another yield optimizer. Deploy is building the first true Neobank of the crypto era, a universal financial layer where individuals and institutions never need to sell their superior assets to live, spend, borrow, or grow wealth. Hold value in Bitcoin and Ethereum. Hold debt and daily spending power in DUSD, the yield-bearing stablecoin that finally makes “inferior money” work for you instead of against you.
+                    dUSD is the yield-bearing stablecoin at the core of Deploy. Deposit stablecoins, receive dUSD, and let delta-neutral strategies work for you—automatically. No lockups, no token emissions, no complexity. Just real yield from genuine market demand.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl">
-                    This is not speculation. This is infrastructure that has already survived five years of extreme market cycles, delivered positive returns during every crash, and attracted high net worth individuals, family offices, and hedge funds with fifteen million dollars in deposits and zero liquidations.
+                    This is not speculation. Our private beta hit $15M TVL in 2 weeks with no marketing, generated $1.6M in yield, and attracted 2,000+ wallets—all with zero incidents. $80M+ in TVL is already committed for public launch.
                 </p>
 
                 <div className="mt-8 font-serif italic text-lg text-paper-accent">
-                    The Neobank era starts now. Join us.
+                    Hedge the volatility. Unlock more yield. Join us.
                 </div>
             </motion.div>
         </section>

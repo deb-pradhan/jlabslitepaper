@@ -19,20 +19,20 @@ const TechnicalArchitecture = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="p-6 bg-paper-bg border border-paper-border rounded">
-                        <div className="text-3xl font-serif font-bold mb-2">~2,000</div>
+                        <div className="text-3xl font-serif font-bold mb-2">$15M</div>
+                        <div className="text-sm text-paper-muted uppercase tracking-wider">TVL (in 2 weeks)</div>
+                    </div>
+                    <div className="p-6 bg-paper-bg border border-paper-border rounded">
+                        <div className="text-3xl font-serif font-bold mb-2">$1.6M</div>
+                        <div className="text-sm text-paper-muted uppercase tracking-wider">Yield Generated</div>
+                    </div>
+                    <div className="p-6 bg-paper-bg border border-paper-border rounded">
+                        <div className="text-3xl font-serif font-bold mb-2">2,000+</div>
                         <div className="text-sm text-paper-muted uppercase tracking-wider">Active Wallets</div>
                     </div>
                     <div className="p-6 bg-paper-bg border border-paper-border rounded">
-                        <div className="text-3xl font-serif font-bold mb-2">$15M+</div>
-                        <div className="text-sm text-paper-muted uppercase tracking-wider">Total Deposits</div>
-                    </div>
-                    <div className="p-6 bg-paper-bg border border-paper-border rounded">
-                        <div className="text-3xl font-serif font-bold mb-2">100%</div>
-                        <div className="text-sm text-paper-muted uppercase tracking-wider">Uptime (All Cycles)</div>
-                    </div>
-                    <div className="p-6 bg-paper-bg border border-paper-border rounded">
                         <div className="text-3xl font-serif font-bold mb-2">0</div>
-                        <div className="text-sm text-paper-muted uppercase tracking-wider">User Liquidations</div>
+                        <div className="text-sm text-paper-muted uppercase tracking-wider">Security Incidents</div>
                     </div>
                 </div>
 

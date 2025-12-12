@@ -46,10 +46,10 @@ const EconomicThesis = () => {
                     Deploy exists to make this strategy not just possible but automatic, productive, and available to everyone from retail holders to sovereign scale institutions.
                 </p>
 
-                {/* Diagram 1: The Deploy Delta-Neutral Flow */}
+                {/* Diagram 1: The Deploy Yield Flow */}
                 <figure className="my-12 border border-paper-border rounded bg-white overflow-hidden">
                     <svg viewBox="0 0 600 140" className="w-full h-auto font-sans bg-white" role="img" aria-labelledby="diagramTitle">
-                        <title id="diagramTitle">The Deploy Delta-Neutral Yield Flow</title>
+                        <title id="diagramTitle">The Deploy Yield Flow Diagram</title>
                         
                         <defs>
                             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -61,31 +61,30 @@ const EconomicThesis = () => {
                         <g transform="translate(20, 30)">
                             <rect x="0" y="0" width="140" height="80" rx="4" fill="white" stroke="#1A1A1A" strokeWidth="1.5" />
                             <text x="70" y="35" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1A1A1A">Stablecoins</text>
-                            <text x="70" y="55" textAnchor="middle" fontSize="11" fill="#666">USDC Deposit</text>
+                            <text x="70" y="55" textAnchor="middle" fontSize="11" fill="#666">USDC, USDT</text>
                         </g>
 
                         {/* Arrow 1 */}
                         <line x1="160" y1="70" x2="190" y2="70" stroke="#1A1A1A" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
 
-                        {/* Step 2: Deploy on Hyperliquid */}
+                        {/* Step 2: Deploy Protocol */}
                         <g transform="translate(200, 20)">
                             <rect x="0" y="0" width="160" height="100" rx="4" fill="#1A1A1A" stroke="#1A1A1A" strokeWidth="1.5" />
-                            <text x="80" y="40" textAnchor="middle" fontSize="15" fontWeight="bold" fill="white">Deploy</text>
-                            <text x="80" y="58" textAnchor="middle" fontSize="11" fill="#CCC">Delta-Neutral on</text>
-                            <text x="80" y="74" textAnchor="middle" fontSize="11" fill="#CCC">Hyperliquid</text>
+                            <text x="80" y="45" textAnchor="middle" fontSize="15" fontWeight="bold" fill="white">Deploy Protocol</text>
+                            <text x="80" y="65" textAnchor="middle" fontSize="11" fill="#CCC">Delta-Neutral Yield</text>
                         </g>
 
                         {/* Arrow 2 */}
                         <line x1="360" y1="70" x2="390" y2="70" stroke="#1A1A1A" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
 
-                        {/* Step 3: dUSD + Yield */}
+                        {/* Step 3: dUSD */}
                         <g transform="translate(400, 30)">
                             <rect x="0" y="0" width="140" height="80" rx="4" fill="white" stroke="#1A1A1A" strokeWidth="1.5" />
-                            <text x="70" y="35" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1A1A1A">dUSD + Yield</text>
+                            <text x="70" y="35" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1A1A1A">dUSD</text>
                             <text x="70" y="55" textAnchor="middle" fontSize="11" fill="#666">15-25% APY</text>
                         </g>
                     </svg>
-                    <figcaption className="text-center text-sm text-paper-muted p-4 border-t border-paper-border font-medium">Figure 1: The Deploy Delta-Neutral Yield Flow</figcaption>
+                    <figcaption className="text-center text-sm text-paper-muted p-4 border-t border-paper-border font-medium">Figure 1: The Deploy Yield Flow</figcaption>
                 </figure>
             </div>
         </Section>

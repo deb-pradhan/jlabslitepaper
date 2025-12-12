@@ -26,7 +26,7 @@ const itemVariants = {
 
 const Roadmap = () => {
     return (
-        <Section id="roadmap" subtitle="8. Roadmap" title="From $15 Million to Multiple Billions">
+        <Section id="roadmap" subtitle="8. Roadmap" title="$80M+ Committed — Scaling to Billions">
             <motion.div
                 className="relative border-l border-paper-border ml-4 md:ml-6 space-y-8 py-4 not-prose"
                 variants={containerVariants}
@@ -45,10 +45,10 @@ const Roadmap = () => {
                             Mid-December 2025
                         </span>
                         <h4 className="text-lg md:text-xl font-serif font-bold mb-2 text-paper-text">
-                            DUSD Public Launch
+                            dUSD Public Launch
                         </h4>
                         <p className="text-paper-muted leading-relaxed">
-                            Launch on Ethereum mainnet with pre-deposit commitments already in place.
+                            Launch on Ethereum mainnet with $80M+ TVL committed from strategic LPs and institutional partners.
                         </p>
                     </div>
                 </motion.div>

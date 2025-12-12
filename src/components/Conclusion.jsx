@@ -3,7 +3,7 @@ import Section from './Section';
 
 const Conclusion = () => {
     return (
-        <Section id="invitation" subtitle="9. An Open Invitation" title="Real Yield, Finally">
+        <Section id="invitation" subtitle="9. An Open Invitation" title="Let's Build the Future of Stablecoins Together">
             <div className="mb-12">
                 <p className="mb-6">
                     Deploy is not launching another short-lived 30 percent APY token that will rug when emissions end.
@@ -14,16 +14,16 @@ const Conclusion = () => {
 
                 <div className="space-y-4 mb-12">
                     <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
-                        If you're tired of watching CEX yields compress while counterparty risk remains...
+                        If you are a stablecoin holder tired of earning zero yield while watching inflation erode your capital...
                     </div>
                     <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
-                        If you're an institution seeking sustainable, risk-adjusted returns above the T-Bill rate...
+                        If you are an institution seeking a crypto yield strategy worthy of permanent allocation...
                     </div>
                     <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
-                        If you want delta-neutral yields with on-chain transparency and no custody transfer...
+                        If you are a protocol builder who wants the most reliable delta-neutral execution engine in DeFi...
                     </div>
                     <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
-                        If you believe the alpha has moved to Perpetual DEXes and want exposure to Hyperliquid funding rates...
+                        If you are a fintech or payment company looking for a white-label product that actually delivers sustainable double-digit returns...
                     </div>
                     <div className="mt-4 font-bold pl-4">
                         ...then Deploy was built for you.
@@ -35,11 +35,12 @@ const Conclusion = () => {
 
                     <div className="flex flex-col gap-2 text-lg mb-8">
                         <span>Hedge the volatility.</span>
-                        <span className="font-bold">Unlock more yield.</span>
+                        <span>Unlock more yield.</span>
+                        <span className="font-bold">Simple. Powerful. Transparent.</span>
                     </div>
 
-                    <a href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-3 bg-paper-accent text-white font-medium rounded hover:bg-black transition-colors">
-                        Launch App
+                    <a href="https://deploy.finance" className="inline-block px-8 py-3 bg-paper-accent text-white font-medium rounded hover:bg-black transition-colors">
+                        deploy.finance
                     </a>
                 </div>
             </div>

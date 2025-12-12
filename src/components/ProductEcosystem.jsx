@@ -27,7 +27,7 @@ const ProductEcosystem = () => {
             <div className="mb-12">
                 <h3 className="text-xl font-bold mb-4">4.2 dUSD: The Yield-Bearing Stablecoin That Finally Makes Sense</h3>
                 <p className="mb-6">
-                    dUSD is a fully collateralized, yield-bearing dollar token powered by delta-neutral strategies on Hyperliquid. It delivers sustainable 15-25% APY from real economic demand—not token emissions or T-Bill allocations.
+                    dUSD is the core product of Deploy Finance. It is a fully collateralized, self-custodial, yield-bearing dollar token that unlocks delta-neutral yields on perpetual DEXes—automatically.
                 </p>
 
                 <div className="p-6 bg-paper-bg border border-paper-border rounded-lg mb-8">

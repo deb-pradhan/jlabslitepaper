@@ -36,21 +36,12 @@ const haptic = {
 
 const NoiseOverlay = () => <div className="noise-overlay" />;
 
-const GridBackground = () => (
-    <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 flex justify-between px-6 md:px-24">
-            {[...Array(6)].map((_, i) => (
-                <div key={i} className={`w-px h-full bg-black/10 ${i > 0 && i < 5 ? 'hidden md:block' : ''}`} />
-            ))}
-        </div>
-    </div>
-);
 
 const SlideContainer = ({ children, className = "", dark = false }) => (
     <div className={`
-        relative w-full min-h-full
-        flex flex-col justify-start items-center 
-        px-6 md:px-16 lg:px-24 
+        relative w-full min-h-[calc(100vh-7rem)] md:min-h-[calc(100vh-8rem)]
+        flex flex-col justify-start items-center
+        px-6 md:px-16 lg:px-24
         py-8 md:py-12
         ${dark ? 'bg-black text-white' : 'bg-bone text-black'}
         ${className}
@@ -478,24 +469,50 @@ const APYChart = ({ compact = false }) => {
 // ============================================================================
 
 const TitleSlide = () => (
-    <SlideContainer>
+    <SlideContainer className="overflow-hidden">
+        {/* Grid Background */}
+        <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+                backgroundImage: `
+                    linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px)
+                `,
+                backgroundSize: '40px 40px',
+            }}
+        />
+        
+        {/* Accent corner lines */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 pointer-events-none overflow-hidden">
+            <div 
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, rgba(238,76,82,0.15) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(238,76,82,0.15) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px',
+                }}
+            />
+        </div>
+
         <div className="relative z-10 w-full max-w-5xl">
-                    <motion.div
+            <motion.div
                 initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
             >
                 {/* Category Badge */}
-                <div className="inline-flex items-center gap-3 mb-10 md:mb-14 border border-black px-4 py-2.5 bg-white">
-                    <div className="w-2 h-2 bg-accent" />
+                <div className="inline-flex items-center gap-3 mb-10 md:mb-14 border border-black px-4 py-2.5 bg-white shadow-sm">
+                    <div className="w-2 h-2 bg-accent animate-pulse" />
                     <span className="font-mono text-[11px] md:text-xs tracking-[0.2em] uppercase">Volatility Neutral. Yield Positive.</span>
-                        </div>
+                </div>
                         
                 {/* Main Headline */}
                 <h1 className="text-[3.5rem] md:text-[8rem] lg:text-[10rem] font-serif text-black leading-[0.85] mb-10 md:mb-14 tracking-tight">
                     <span className="block">Deploy</span>
                     <span className="block text-accent italic">Finance</span>
-                        </h1>
+                </h1>
                         
                 {/* Tagline */}
                 <p className="text-lg md:text-2xl lg:text-3xl font-mono text-black/70 max-w-xl leading-snug">
@@ -503,7 +520,7 @@ const TitleSlide = () => (
                     <br />
                     <span className="text-accent font-semibold">Unlock more yield.</span>
                 </p>
-                    </motion.div>
+            </motion.div>
         </div>
     </SlideContainer>
 );
@@ -910,33 +927,6 @@ const MechanicsSlide = () => {
                                 <p className="font-mono text-xs md:text-sm leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
                             </div>
                         ))}
-                    </div>
-                    
-                    {/* AIXbt Tweet */}
-                    <div className="border-2 border-black bg-white p-5 md:p-8">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
-                                <Twitter className="w-6 h-6 text-white" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="font-bold">@aixbt_agent</span>
-                                    <Check className="w-4 h-4 text-accent" />
-                                    <span className="font-mono text-xs text-black/40">AI Analysis Agent</span>
-                                </div>
-                                <p className="font-mono text-sm text-black/80 leading-relaxed mb-3">
-                                    "Deploy Finance is building the infrastructure layer for sustainable delta-neutral yields. Their approach to Hyperliquid funding rate arbitrage is technically sound and the team execution has been impressive. One to watch in the stablecoin yield space."
-                                </p>
-                                <a 
-                                    href="https://twitter.com/aixbt_agent" 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 font-mono text-xs text-accent hover:underline"
-                                >
-                                    View on X <ExternalLink className="w-3 h-3" />
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </motion.div>
             </div>
@@ -1642,7 +1632,6 @@ function DeployPitchDeckInner() {
     return (
         <div className={`font-mono h-screen w-screen overflow-hidden relative selection:bg-accent selection:text-white ${isDarkSlide ? 'bg-black text-white' : 'bg-bone text-black'}`}>
             <NoiseOverlay />
-            {!isDarkSlide && <GridBackground />}
             
             {/* Shared Navigation Bar */}
             <Navbar dark={isDarkSlide} />

@@ -1116,7 +1116,7 @@ const TeamSlide = () => {
             bio: "On-chain analyst and DeFi strategy expert.",
             prev: "Jarvis Labs",
             twitter: "https://x.com/MrBenLilly",
-            image: "https://pbs.twimg.com/profile_images/1584892529718697985/bHR6CPIN_400x400.jpg"
+            image: "https://unavatar.io/twitter/MrBenLilly"
         },
         { 
             name: "Deb", 
@@ -1157,12 +1157,12 @@ const TeamSlide = () => {
                     </h2>
                     
                     {/* Core Team */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-0 mb-8">
                         {team.map((member, i) => (
                             <div 
                                 key={member.name} 
                                 className={`
-                                    bg-white p-5 md:p-8 
+                                    bg-white p-4 md:p-6 
                                     border-2 border-black md:border md:border-black
                                     ${i > 0 ? 'md:border-l-0' : ''}
                                     hover:bg-bone transition-colors group

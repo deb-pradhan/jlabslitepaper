@@ -1207,6 +1207,7 @@ const TeamSlide = () => {
     ];
 
     const advisors = [
+        { name: "Ben Lilly", role: "Advisor", expertise: "DeFi Strategist" },
         { name: "Chirdeep", role: "Advisor", expertise: "Strategic Advisor" },
         { name: "Shawn", role: "Angel", expertise: "Ex-JPMorgan" },
     ];
